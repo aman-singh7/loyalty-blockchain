@@ -1,0 +1,7 @@
+build/
+.vscode
+.env
+
+# Generated Abi
+abigenBindings/abi
+abigenBindings/bin
