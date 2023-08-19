@@ -2,8 +2,7 @@ package brand
 
 import "github.com/aman-singh7/loyalty-blockchain/domain/coupon"
 
-type Brand struct {
-}
+type Brand struct{}
 
 type CouponPriceRequest struct {
 	BrandID  int           `json:"uid"`

@@ -2,44 +2,45 @@ package user
 
 import (
 	domain "github.com/aman-singh7/loyalty-blockchain/domain/user"
+	"github.com/ethereum/go-ethereum/common"
 )
 
-func toDomainDiscountRequest(request *DiscountRequest, TransactionID int) *domain.DiscountRequest {
+func toDomainDiscountRequest(request *DiscountRequest, transactionId int, userAddress common.Address) *domain.DiscountRequest {
 	return &domain.DiscountRequest{
-		UserID: request.UserID,
-		ProductID: request.ProductID,
+		UserAddress:     userAddress,
+		ProductID:       request.ProductID,
 		ProductCategory: request.ProductCategory,
-		Coupon: request.Coupon,
-		Tokens: request.Tokens,
-		TransactionID: TransactionID,
+		Coupon:          request.Coupon,
+		Tokens:          request.Tokens,
+		TransactionID:   transactionId,
 	}
-} 
+}
 
-func toDomainPurchaseProductRequest(request *PurchaseProductRequest, TransactionID int) *domain.PurchaseProductRequest {
+func toDomainPurchaseProductRequest(request *PurchaseProductRequest, transactionId int, userAddress common.Address) *domain.PurchaseProductRequest {
 	return &domain.PurchaseProductRequest{
-		UserID: request.UserID,
-		ProductID: request.ProductID,
+		UserAddress:     userAddress,
+		ProductID:       request.ProductID,
 		ProductCategory: request.ProductCategory,
-		Coupon: request.Coupon,
-		Tokens: request.Tokens,
-		Price: request.Price,
-		TransactionID: TransactionID,
+		Coupon:          request.Coupon,
+		Tokens:          request.Tokens,
+		Price:           request.Price,
+		TransactionID:   transactionId,
 	}
 }
 
-func toDomainPurchaseCouponRequest(request *PurchaseCouponRequest, TransactionID int) *domain.PurchaseCouponRequest {
+func toDomainPurchaseCouponRequest(request *PurchaseCouponRequest, transactionId int, userAddress common.Address) *domain.PurchaseCouponRequest {
 	return &domain.PurchaseCouponRequest{
-		UserID: request.UserID,
-		Tokens: request.Tokens,
-		Coupon: request.Coupon,
-		TransactionID: TransactionID,
+		UserAddress:   userAddress,
+		Tokens:        request.Tokens,
+		Coupon:        request.Coupon,
+		TransactionID: transactionId,
 	}
 }
 
-func toDomainReferralRewardRequest(request *ReferralRewardRequest, TransactionID int) *domain.ReferralRewardRequest {
+func toDomainReferralRewardRequest(request *ReferralRewardRequest, transactionId int, userAddress common.Address) *domain.ReferralRewardRequest {
 	return &domain.ReferralRewardRequest{
-		UserID: request.UserID,
-		Tokens: request.Tokens,
-		TransactionID: TransactionID,
+		UserAddress:   userAddress,
+		Tokens:        request.Tokens,
+		TransactionID: transactionId,
 	}
 }

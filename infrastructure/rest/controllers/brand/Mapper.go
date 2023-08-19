@@ -2,33 +2,34 @@ package brand
 
 import (
 	domain "github.com/aman-singh7/loyalty-blockchain/domain/brand"
+	"github.com/ethereum/go-ethereum/common"
 )
 
-func toDomainCouponPriceRequest(request *CouponPriceRequest, TransactionID int) *domain.CouponPriceRequest {
+func toDomainCouponPriceRequest(request *CouponPriceRequest, transactionId int, brandAddress common.Address) *domain.CouponPriceRequest {
 	return &domain.CouponPriceRequest{
-		BrandID:       request.BrandID,
+		BrandAddress:  brandAddress,
 		Coupon:        request.Coupon,
 		Count:         request.Count,
 		Discount:      request.Discount,
-		TransactionID: TransactionID,
+		TransactionID: transactionId,
 	}
 }
 
-func toDomainCreateCouponRequest(request *CreateCouponRequest, TransactionID int) *domain.CreateCouponRequest {
+func toDomainCreateCouponRequest(request *CreateCouponRequest, transactionId int, brandAddress common.Address) *domain.CreateCouponRequest {
 	return &domain.CreateCouponRequest{
-		BrandID:       request.BrandID,
+		BrandAddress:  brandAddress,
 		Coupon:        request.Coupon,
 		Count:         request.Count,
 		Discount:      request.Discount,
 		Tokens:        request.Tokens,
-		TransactionID: TransactionID,
+		TransactionID: transactionId,
 	}
 }
 
-func toDomainRedeemTokensRequest(request *RedeemTokensRequest, TransactionID int) *domain.RedeemTokensRequest {
+func toDomainRedeemTokensRequest(request *RedeemTokensRequest, transactionId int, brandAddress common.Address) *domain.RedeemTokensRequest {
 	return &domain.RedeemTokensRequest{
-		BrandID:       request.BrandID,
+		BrandAddress:  brandAddress,
 		Tokens:        request.Tokens,
-		TransactionID: TransactionID,
+		TransactionID: transactionId,
 	}
 }

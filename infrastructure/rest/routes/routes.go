@@ -10,5 +10,6 @@ func ApplicationV1Router(e *echo.Echo, api *api.Api) {
 	routerV1 := e.Group("/v1")
 	{
 		UserRoutes(routerV1, adapter.UserAdapter(api))
+		BrandRoutes(routerV1, adapter.BrandAdapter(api))
 	}
 }

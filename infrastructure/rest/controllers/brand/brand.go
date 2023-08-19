@@ -3,7 +3,7 @@ package brand
 import (
 	"net/http"
 
-	brand "github.com/aman-singh7/loyalty-blockchain/application/core/admin"
+	brand "github.com/aman-singh7/loyalty-blockchain/application/core/brand"
 	"github.com/labstack/echo/v4"
 )
 
@@ -11,6 +11,10 @@ import (
 
 type Controller struct {
 	BrandService *brand.Service
+}
+
+func (c *Controller) GetBrand(ctx echo.Context) error {
+	return ctx.JSON(http.StatusNotImplemented, echo.Map{"message": "get brand api not implemented"})
 }
 
 func (c *Controller) CouponPrice(ctx echo.Context) error {
