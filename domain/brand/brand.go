@@ -5,7 +5,7 @@ import "github.com/aman-singh7/loyalty-blockchain/domain/coupon"
 type Brand struct {
 }
 
-type DomainCouponPriceRequest struct {
+type CouponPriceRequest struct {
 	BrandID       int           `json:"uid"`
 	Coupon        coupon.Coupon `json:"coupon"`
 	Count         int           `json:"count"`
@@ -13,7 +13,7 @@ type DomainCouponPriceRequest struct {
 	TransactionID int           `json:"transactionID"`
 }
 
-type DomainCreateCouponRequest struct {
+type CreateCouponRequest struct {
 	BrandID       int           `json:"uid"`
 	Coupon        coupon.Coupon `json:"coupon"`
 	Count         int           `json:"count"`
@@ -22,7 +22,7 @@ type DomainCreateCouponRequest struct {
 	TransactionID int           `json:"transactionID"`
 }
 
-type DomainRedeemTokensRequest struct {
+type RedeemTokensRequest struct {
 	BrandID       int `json:"uid"`
 	Tokens        int `json:"tokens"`
 	TransactionID int `json:"transactionID"`
