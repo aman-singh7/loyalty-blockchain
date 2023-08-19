@@ -14,6 +14,12 @@ type Service struct {
 	api *Api
 }
 
+func NewService(api *Api) *Service {
+	return &Service{
+		api:  api,
+	}
+}
+
 func (s *Service) PurchaseProductWithCoupon(transactionId int, coupon coupon.Coupon, address common.Address) error {
 	_, err := s.api.ApiTransactor.ConsumerCouponPayment(&bind.TransactOpts{}, utils.BigInt(transactionId), utils.BigInt(coupon.HoldingID), address)
 	if err != nil {
