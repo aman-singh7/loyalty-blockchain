@@ -55,6 +55,7 @@ contract LoyaltyProgramme {
     uint currentCouponId = 0;
     Coupon[] public couponList;
 
+
     // errors
 
     // supercoin transaction errors (identified uniquely by unique transactionId)
@@ -225,6 +226,19 @@ contract LoyaltyProgramme {
     event CouponCreated(uint transactionId, uint couponId);
 
     // modifiers
+
+    modifier checkOwner(
+        address account,
+        uint transactionId
+    ) {
+        if(account != OWNER_ADDRESS && account != msg.sender) {
+            revert UnAuthorized(
+                transactionId, 
+                account
+            );
+        }
+        _;
+    }
 
     modifier checkSuperCoinFunds(
         uint transactionId,
@@ -623,5 +637,12 @@ contract LoyaltyProgramme {
     ) public checkAccess(transactionId, AccountType.OWNER) returns (uint) {
         accounts[msg.sender].superCoins += amount;
         return accounts[msg.sender].superCoins;
+    }
+
+    function getAccountBalance(
+        uint transactionId,
+        address account
+    ) public view checkOwner(account, transactionId) returns (uint) {
+        return accounts[account].superCoins;
     }
 }
