@@ -2,6 +2,7 @@ package user
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/aman-singh7/loyalty-blockchain/application/api"
@@ -13,10 +14,10 @@ import (
 
 type Service struct {
 	repo *userRepo.Repository
-	api  *api.Api
+	api  *api.Service
 }
 
-func NewService(repo *userRepo.Repository, api *api.Api) *Service {
+func NewService(repo *userRepo.Repository, api *api.Service) *Service {
 	return &Service{
 		repo: repo,
 		api:  api,
@@ -50,8 +51,23 @@ func (s *Service) PurchaseProduct(request user.PurchaseProductRequest) error {
 			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
 		}
 	}
-	// TODO: call sol_purchase_product()
-	// TODO: give reward tokens
+	if(strconv.Itoa(request.Coupon.CouponID) != "" && request.Tokens != 0) {
+		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon and tokens cannot be in same transaction"})
+	}
+	if request.Tokens != 0 {
+		if err := s.api.PurchaseProductWithToken(request.TransactionID, request.Tokens); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
+		}
+	} else if request.Coupon.CouponID != 0 {
+		if err := s.api.PurchaseProductWithCoupon(request.TransactionID, request.Coupon, request.Coupon.IssuerBusiness); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
+		}
+	}
+	// TODO: decide a reward amount
+	rewardAmount := request.Price / 100
+	if err := s.api.RewardToken(request.TransactionID, rewardAmount); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
+	}
 	return nil
 }
 
