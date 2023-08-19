@@ -73,12 +73,16 @@ func (s *Service) PurchaseProduct(request user.PurchaseProductRequest) error {
 
 func (s *Service) PurchaseCoupon(request user.PurchaseCouponRequest) error {
 	// TODO: validate user
-	// TODO: call sol_purchase_coupon()
+	if err := s.api.PurchaseCoupon(request.TransactionID, request.Coupon, request.Count, request.Coupon.IssuerBusiness); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
+	}
 	return nil
 }
 
 func (s *Service) ReferralReward(request user.ReferralRewardRequest) error {
-	// TODO: validate user1 and user2
-	// TODO: give reward tokens
+	// TODO: validate user1 and user2 := request.Price / 100
+	if err := s.api.RewardToken(request.TransactionID, request.Tokens); err != nil {
+		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
+	}
 	return nil
 }

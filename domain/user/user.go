@@ -27,6 +27,7 @@ type PurchaseProductRequest struct {
 type PurchaseCouponRequest struct {
 	UserAddress   common.Address `json:"userAddress"`
 	Tokens        int            `json:"tokens"`
+	Count         int            `json:"count"`
 	Coupon        coupon.Coupon  `json:"coupon"`
 	TransactionID int            `json:"transactionID"`
 }
