@@ -17,8 +17,8 @@ type DomainPurchaseProductRequest struct {
 	ProductCategory string        `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
 	Tokens          int           `json:"tokens"`
-	TransactionID   int           `json:"transactionID"`
 	Price           int           `json:"price"`
+	TransactionID   int           `json:"transactionID"`
 }
 
 type DomainPurchaseCouponRequest struct {
