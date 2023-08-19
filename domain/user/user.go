@@ -6,8 +6,8 @@ import (
 
 type DiscountRequest struct {
 	UserID          int           `json:"uid"`
-	ProductID       int        `json:"productID"`
-	ProductCategory int        `json:"productCategory"`
+	ProductID       int           `json:"productID"`
+	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
 	Tokens          int           `json:"tokens"`
 	TransactionID   int           `json:"transactionID"`
@@ -15,8 +15,8 @@ type DiscountRequest struct {
 
 type PurchaseProductRequest struct {
 	UserID          int           `json:"uid"`
-	ProductID       int        `json:"productID"`
-	ProductCategory int        `json:"productCategory"`
+	ProductID       int           `json:"productID"`
+	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
 	Tokens          int           `json:"tokens"`
 	Price           int           `json:"price"`
