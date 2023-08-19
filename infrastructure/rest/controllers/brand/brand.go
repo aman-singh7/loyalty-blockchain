@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	brand "github.com/aman-singh7/loyalty-blockchain/application/core/admin"
-	"github.com/go-playground/validator/v10"
 	"github.com/labstack/echo/v4"
 )
 
@@ -19,7 +18,7 @@ func (c *Controller) CouponPrice(ctx echo.Context) error {
 	if err := ctx.Bind(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := validator.New().Struct(request); err != nil {
+	if err := ctx.Validate(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call calculating price
@@ -31,7 +30,7 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	if err := ctx.Bind(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := validator.New().Struct(request); err != nil {
+	if err := ctx.Validate(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call service func
@@ -43,7 +42,7 @@ func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	if err := ctx.Bind(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := validator.New().Struct(request); err != nil {
+	if err := ctx.Validate(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call service func
