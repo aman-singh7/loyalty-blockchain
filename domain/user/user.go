@@ -1,8 +1,10 @@
 package user
 
-import "github.com/aman-singh7/loyalty-blockchain/domain/coupon"
+import (
+	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
+)
 
-type DomainDiscountRequest struct {
+type DiscountRequest struct {
 	UserID          int           `json:"uid"`
 	ProductID       string        `json:"productID"`
 	ProductCategory string        `json:"productCategory"`
@@ -11,24 +13,24 @@ type DomainDiscountRequest struct {
 	TransactionID   int           `json:"transactionID"`
 }
 
-type DomainPurchaseProductRequest struct {
+type PurchaseProductRequest struct {
 	UserID          int           `json:"uid"`
 	ProductID       string        `json:"productID"`
 	ProductCategory string        `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
 	Tokens          int           `json:"tokens"`
-	TransactionID   int           `json:"transactionID"`
 	Price           int           `json:"price"`
+	TransactionID   int           `json:"transactionID"`
 }
 
-type DomainPurchaseCouponRequest struct {
+type PurchaseCouponRequest struct {
 	UserID        int           `json:"uid"`
 	Tokens        int           `json:"tokens"`
 	Coupon        coupon.Coupon `json:"coupon"`
 	TransactionID int           `json:"transactionID"`
 }
 
-type DomainReferralRewardRequest struct {
+type ReferralRewardRequest struct {
 	UserID        int `json:"uid"`
 	Tokens        int `json:"tokens"`
 	TransactionID int `json:"transactionID"`
