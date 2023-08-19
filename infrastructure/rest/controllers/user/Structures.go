@@ -4,33 +4,32 @@ import (
 	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
 )
 
-type User struct {
-}
+type User struct{}
 
 type DiscountRequest struct {
 	UserID          int           `json:"uid"`
-	ProductID       int        `json:"productID"`
-	ProductCategory int        `json:"productCategory"`
+	ProductID       int           `json:"productID"`
+	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
-	Tokens          int           `json:"tokens"`       
+	Tokens          int           `json:"tokens"`
 }
 
 type PurchaseProductRequest struct {
 	UserID          int           `json:"uid"`
-	ProductID       int        `json:"productID"`
-	ProductCategory int        `json:"productCategory"`
+	ProductID       int           `json:"productID"`
+	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
-	Tokens          int           `json:"tokens"`         
+	Tokens          int           `json:"tokens"`
 	Price           int           `json:"price"`
 }
 
 type PurchaseCouponRequest struct {
-	UserID        int           `json:"uid"`
-	Tokens        int           `json:"tokens"`
-	Coupon        coupon.Coupon `json:"coupon"`         
+	UserID int           `json:"uid"`
+	Tokens int           `json:"tokens"`
+	Coupon coupon.Coupon `json:"coupon"`
 }
 
 type ReferralRewardRequest struct {
-	UserID        int `json:"uid"`
-	Tokens        int `json:"tokens"`
+	UserID int `json:"uid"`
+	Tokens int `json:"tokens"`
 }
