@@ -26,12 +26,13 @@ func NewService(repo *userRepo.Repository, api *api.Api) *Service {
 // TODO: make enum for errors
 
 func (s *Service) Discount(userCoupon coupon.Coupon) (int, error) {
-	if isActive := (userCoupon.Expiry < time.Now().Second()); !isActive {
+	if isActive := (userCoupon.ExpiryDate < time.Now().Second()); !isActive {
 		return 0, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon has expired"})
 	}
 	return userCoupon.Discount, nil
 }
 
+// TODO: differentiate between purchase with Coupon/Token + Cash
 func (s *Service) PurchaseProduct(request user.PurchaseProductRequest) error {
 	// TODO: validate user
 	_, err := s.Discount(request.Coupon)
