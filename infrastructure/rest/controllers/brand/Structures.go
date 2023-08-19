@@ -6,11 +6,11 @@ type Brand struct {
 }
 
 type CreateCouponRequest struct {
-	Coupon        coupon.Coupon `json:"coupon"`
-	Count         int           `json:"count"`
-	Discount      int           `json:"discount"`
-	Tokens        int           `json:"tokens"`
-	TransactionID int           `json:"transactionID"`
+	BrandID  int           `json:"uid"`
+	Coupon   coupon.Coupon `json:"coupon"`
+	Count    int           `json:"count"`
+	Discount int           `json:"discount"`
+	Tokens   int           `json:"tokens"`
 }
 
 type RedeemTokensRequest struct {

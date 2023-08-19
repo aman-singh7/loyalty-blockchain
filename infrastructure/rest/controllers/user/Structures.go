@@ -12,8 +12,7 @@ type DiscountRequest struct {
 	ProductID       string        `json:"productID"`
 	ProductCategory string        `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
-	Tokens          int           `json:"tokens"`
-	TransactionID   int           `json:"transactionID"`
+	Tokens          int           `json:"tokens"`       
 }
 
 type PurchaseProductRequest struct {
@@ -21,20 +20,17 @@ type PurchaseProductRequest struct {
 	ProductID       string        `json:"productID"`
 	ProductCategory string        `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
-	Tokens          int           `json:"tokens"`
-	TransactionID   int           `json:"transactionID"`
+	Tokens          int           `json:"tokens"`         
 	Price           int           `json:"price"`
 }
 
 type PurchaseCouponRequest struct {
 	UserID        int           `json:"uid"`
 	Tokens        int           `json:"tokens"`
-	Coupon        coupon.Coupon `json:"coupon"`
-	TransactionID int           `json:"transactionID"`
+	Coupon        coupon.Coupon `json:"coupon"`         
 }
 
 type ReferralRewardRequest struct {
 	UserID        int `json:"uid"`
 	Tokens        int `json:"tokens"`
-	TransactionID int `json:"transactionID"`
 }
