@@ -8,6 +8,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
+// TODO: replace validator with echo.validator
+
 type Controller struct {
 	BrandService *brand.Service
 }
@@ -15,23 +17,23 @@ type Controller struct {
 func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	var request CreateCouponRequest
 	if err := ctx.Bind(request); err != nil {
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	if err := validator.New().Struct(request); err != nil {
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: call service
+	// TODO: call service func
 	return nil
 }
 
 func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	var request RedeemTokensRequest
 	if err := ctx.Bind(request); err != nil {
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	if err := validator.New().Struct(request); err != nil {
-		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: call service
+	// TODO: call service func
 	return nil
 }
