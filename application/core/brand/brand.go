@@ -3,6 +3,7 @@ package brand
 import (
 	"net/http"
 
+	"github.com/aman-singh7/loyalty-blockchain/application/api"
 	"github.com/aman-singh7/loyalty-blockchain/application/price"
 	"github.com/aman-singh7/loyalty-blockchain/domain/brand"
 	brandRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/brand"
@@ -11,11 +12,13 @@ import (
 
 type Service struct {
 	repo *brandRepo.Repository
+	api  *api.Service
 }
 
-func NewService(repo *brandRepo.Repository) *Service {
+func NewService(repo *brandRepo.Repository, api *api.Service) *Service {
 	return &Service{
 		repo: repo,
+		api: api,
 	}
 }
 

@@ -3,7 +3,7 @@ package brand
 import (
 	"net/http"
 
-	brand "github.com/aman-singh7/loyalty-blockchain/application/core/admin"
+	brand "github.com/aman-singh7/loyalty-blockchain/application/core/brand"
 	"github.com/labstack/echo/v4"
 )
 
