@@ -8,6 +8,15 @@ type User struct {
 
 }
 
+type DiscountRequest struct {
+	UserID int `json:"uid"`
+	ProductID string `json:"productID"`
+	ProductCategory string `json:"productCategory"`
+	Coupon coupon.Coupon `json:"coupon"`
+	Tokens int `json:"tokens"`
+	TransactionID int `json:"transactionID"`
+}
+
 type PurchaseProductRequest struct {
 	UserID int `json:"uid"`
 	ProductID string `json:"productID"`
