@@ -55,7 +55,6 @@ contract LoyaltyProgramme {
     uint currentCouponId = 0;
     Coupon[] public couponList;
 
-
     // errors
 
     // supercoin transaction errors (identified uniquely by unique transactionId)
@@ -84,13 +83,8 @@ contract LoyaltyProgramme {
 
     /// Only recipient with `validAuthority` can get this transaction money
     /// @param transactionId id to uniquely identify the transaction
-    /// @param validAuthority authority to whom transaction is allowed only
     /// @param recieverAuthority authority of the recipient
-    error InValidRecipient(
-        uint transactionId,
-        AccountType validAuthority,
-        AccountType recieverAuthority
-    );
+    error InValidRecipient(uint transactionId, AccountType recieverAuthority);
 
     /// account type of the involved member is invalid for this transaction
     /// @param transactionId id to uniquely identify the transaction
@@ -161,6 +155,8 @@ contract LoyaltyProgramme {
         AccountType existingAuthority
     );
 
+    error UnRegisteredAccount(uint transactionId, address person);
+
     /// Integrity constraints failed
     /// @param transactionId id to uniquely identify the transaction
     /// @param message message for the error
@@ -227,15 +223,9 @@ contract LoyaltyProgramme {
 
     // modifiers
 
-    modifier checkOwner(
-        address account,
-        uint transactionId
-    ) {
-        if(account != OWNER_ADDRESS && account != msg.sender) {
-            revert UnAuthorized(
-                transactionId, 
-                account
-            );
+    modifier checkOwner(address account, uint transactionId) {
+        if (msg.sender != OWNER_ADDRESS && msg.sender != account) {
+            revert UnAuthorized(transactionId, account);
         }
         _;
     }
@@ -330,6 +320,13 @@ contract LoyaltyProgramme {
         _;
     }
 
+    modifier checkRegistered(uint transactionId, address person) {
+        if (accounts[person].accountType == AccountType.UNREGISTERED) {
+            revert UnRegisteredAccount(transactionId, person);
+        }
+        _;
+    }
+
     modifier checkAccountType(
         uint transactionId,
         address person,
@@ -353,7 +350,12 @@ contract LoyaltyProgramme {
         address sender,
         address receiver,
         uint amount
-    ) internal checkSuperCoinFunds(transactionId, sender, amount) {
+    )
+        internal
+        checkRegistered(transactionId, sender)
+        checkRegistered(transactionId, receiver)
+        checkSuperCoinFunds(transactionId, sender, amount)
+    {
         accounts[sender].superCoins -= amount;
         accounts[receiver].superCoins += amount;
         emit SuperCoinTransactionComplete(
@@ -616,19 +618,18 @@ contract LoyaltyProgramme {
         emit MemberRegistered(transactionId, memberAddress, accountType);
     }
 
-    function payBusiness(
+    function pay(
         uint transactionId,
-        address business,
+        address account,
         uint amount
     ) public checkAccess(transactionId, AccountType.OWNER) {
-        if (accounts[business].accountType != AccountType.BUSINESS) {
+        if (accounts[account].accountType == AccountType.OWNER) {
             revert InValidRecipient(
                 transactionId,
-                AccountType.BUSINESS,
-                accounts[business].accountType
+                accounts[account].accountType
             );
         }
-        _transferSuperCoins(transactionId, OWNER_ADDRESS, business, amount);
+        _transferSuperCoins(transactionId, OWNER_ADDRESS, account, amount);
     }
 
     function mintTokens(
@@ -641,8 +642,14 @@ contract LoyaltyProgramme {
 
     function getAccountBalance(
         uint transactionId,
-        address account
-    ) public view checkOwner(account, transactionId) returns (uint) {
-        return accounts[account].superCoins;
+        address person
+    )
+        public
+        view
+        checkOwner(person, transactionId)
+        checkRegistered(transactionId, person)
+        returns (uint)
+    {
+        return accounts[person].superCoins;
     }
 }
