@@ -1,7 +1,6 @@
 package admin
 
 type Admin struct {
-
 }
 
 type GetALLCouponsRequest struct {

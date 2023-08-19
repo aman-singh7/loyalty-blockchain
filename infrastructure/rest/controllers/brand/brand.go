@@ -16,11 +16,11 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	var request CreateCouponRequest
 	if err := ctx.Bind(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	} 
+	}
 	if err := validator.New().Struct(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	// TODO: call service 
+	// TODO: call service
 	return nil
 }
 
@@ -28,10 +28,10 @@ func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	var request RedeemTokensRequest
 	if err := ctx.Bind(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
-	} 
+	}
 	if err := validator.New().Struct(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, map[string]string{"error": err.Error()})
 	}
-	// TODO: call service 
+	// TODO: call service
 	return nil
 }
