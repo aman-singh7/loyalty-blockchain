@@ -52,15 +52,15 @@ func (s *Service) RewardToken(transactionId int, amount int) error {
 	return nil
 }
 
-func (s *Service) CreateCoupon(transactionId int, coupon coupon.Coupon, address common.Address, cost int) error {
-	_, err := s.api.ApiTransactor.CreateCoupons(&bind.TransactOpts{}, utils.BigInt(transactionId), address, utils.BigInt(coupon.Count), utils.BigInt(coupon.SuperCoins), utils.BigInt(coupon.Discount), utils.BigInt(coupon.ProductCategory), utils.BigInt(coupon.ThresholdValue), utils.BigInt((coupon.ProductId)), uint8(coupon.Type), utils.BigInt(coupon.ExpiryDate), utils.BigInt(cost))
+func (s *Service) CreateCoupon(transactionId int, coupon coupon.Coupon, cost int) error {
+	_, err := s.api.ApiTransactor.CreateCoupons(&bind.TransactOpts{}, utils.BigInt(transactionId), coupon.IssuerBusiness, utils.BigInt(coupon.Count), utils.BigInt(coupon.SuperCoins), utils.BigInt(coupon.Discount), utils.BigInt(coupon.ProductCategory), utils.BigInt(coupon.ThresholdValue), utils.BigInt((coupon.ProductId)), uint8(coupon.Type), utils.BigInt(coupon.ExpiryDate), utils.BigInt(cost))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
 	return nil
 }
 
-func (s *Service) RedeemTokens(amount int) error {
+func (s *Service) RedeemTokens(transactionId int, amount int) error {
 	_, err := s.api.ApiTransactor.RedeemTokens(&bind.TransactOpts{}, utils.BigInt(amount))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
