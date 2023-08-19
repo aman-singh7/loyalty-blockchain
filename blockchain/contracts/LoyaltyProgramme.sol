@@ -17,87 +17,159 @@ contract LoyaltyProgramme {
     }
 
     struct Coupon {
+        uint couponId; // will be indexed onto the vector
         address issuerBusiness;
         uint superCoins; // value of superCoin in each coupon
         uint count;
         uint discount; // multipiled by a factor of `decimalFactor`
-        string productCategory;
-        uint thresholdvalue;
-        string productId;
+        uint productCategory;
+        uint thresholdValue;
+        uint productId;
         CouponType couponType;
-        uint expiry;
+        uint expiryTime;
+        bool active;
+    }
+
+    // Coupon NFT
+    struct CouponHolding {
+        uint holdingId;
+        uint couponId;
+        uint expiryDate;
         bool active;
     }
 
     struct Account {
         uint superCoins;
-        mapping(uint => Coupon) coupons;
+        uint currentHoldingId;
+        mapping(uint => uint) couponHoldings; // holdings id to index mapping
+        CouponHolding[] coupons; // will be available only for CONSUMER and others has empty
         AccountType accountType; // has default value unregistered
     }
 
     // state variables
 
     uint constant decimalFactor = 1000;
+    uint constant couponRatio = 10; //(100/10 = 10%)
     address immutable OWNER_ADDRESS;
     mapping(address => Account) accounts;
+    uint currentCouponId = 0;
+    Coupon[] public couponList;
 
     // errors
 
+    // supercoin transaction errors (identified uniquely by unique transactionId)
+
     /// senders account has less super coin than requested.
     /// needed `requested` supercoins but only `available` supercoins are available
+    /// @param transactionId id to uniquely identify the transaction
     /// @param requested requested transfer amount
     /// @param available available amount in the senders account
-    error InSufficientFunds(uint requested, uint available);
+    error InSufficientFunds(uint transactionId, uint requested, uint available);
 
     /// Only requestor with `validAuthority` can do this action
+    /// @param transactionId id to uniquely identify the transaction
     /// @param validAuthority authority by whom action is allowed only
     /// @param senderAuthority authority of the requester
-    error UnAuthorized(AccountType validAuthority, AccountType senderAuthority);
+    error InValidAuthority(
+        uint transactionId,
+        AccountType validAuthority,
+        AccountType senderAuthority
+    );
+
+    /// the `requestor` is not allowed to access this resource
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param requestor address of the requestor
+    error UnAuthorized(uint transactionId, address requestor);
 
     /// Only recipient with `validAuthority` can get this transaction money
+    /// @param transactionId id to uniquely identify the transaction
     /// @param validAuthority authority to whom transaction is allowed only
     /// @param recieverAuthority authority of the recipient
     error InValidRecipient(
+        uint transactionId,
         AccountType validAuthority,
         AccountType recieverAuthority
     );
 
     /// account type of the involved member is invalid for this transaction
+    /// @param transactionId id to uniquely identify the transaction
     /// @param account wallet address of the involved member with invalid account type
-    /// @param expectedType expected account type for the member
-    /// @param recievedType recieved account type for the member
+    /// @param validAuthority expected account authority type for the member
+    /// @param senderAuthority recieved account authority for the member
     error UnexpectedAccount(
+        uint transactionId,
         address account,
-        AccountType expectedType,
-        AccountType recievedType
+        AccountType validAuthority,
+        AccountType senderAuthority
     );
 
     /// Coupon is either already expired or invalid couponId is provided
-    /// @param couponId provided couponId
-    error InvalidCoupons(uint couponId);
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param holdingId holdingId of the coupon holding
+    error InValidCouponHolding(uint transactionId, uint holdingId);
 
-    /// Coupons are expired
-    /// @param expiry expiry date of the coupon
+    /// Coupon is either already expired or invalid couponId is provided
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param couponId couponId of the coupon holding
+    error InValidCoupon(uint transactionId, uint couponId);
+
+    /// Coupons holdings are expired
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param holdingId id of the coupon holding
     /// @param couponId couponId of the coupon
-    error CouponsExpired(uint expiry, uint couponId);
+    /// @param expiryDate expiry date of the coupon
+    error CouponHoldingExpired(
+        uint transactionId,
+        uint holdingId,
+        uint couponId,
+        uint expiryDate
+    );
 
     /// senders account has less coupons than requested.
     /// needed `requested` coupons but only `available` coupons are available
+    /// @param transactionId id to uniquely identify the transaction
     /// @param couponId requested couponId
     /// @param requested requested coupons
     /// @param available available coupons
-    error InSufficientCoupons(uint couponId, uint requested, uint available);
+    error InSufficientCoupons(
+        uint transactionId,
+        uint couponId,
+        uint requested,
+        uint available
+    );
+
+    /// consumer has applied coupon on wrong business.
+    /// coupon is being applied on `receivedBusiness` but coupon is issued by `expectedBusiness`
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param couponId requested couponId
+    /// @param expectedBusiness business by whom the coupon is issued
+    /// @param receivedBusiness business to whom the coupon is applied
+    error InValidCouponHoldingApplication(
+        uint transactionId,
+        uint couponId,
+        address expectedBusiness,
+        address receivedBusiness
+    );
 
     /// Invalid regisration
     /// User already has an account with `existingAuthority`
+    /// @param transactionId id to uniquely identify the transaction
     /// @param existingAuthority existing authority of the user
-    error InValidRegistration(AccountType existingAuthority);
+    error InValidRegistration(
+        uint transactionId,
+        AccountType existingAuthority
+    );
+
+    /// Integrity constraints failed
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param message message for the error
+    error IntegrityConstraintFailed(uint transactionId, string message);
 
     // events
 
     /// event emittend when a transaction of `amount` supercoin is done
     /// from `sender` account to `reciever` account
-    /// @param transactionId transactionId of the transaction
+    /// @param transactionId id to uniquely identify the transaction
     /// @param sender sender account
     /// @param receiver reciever account
     /// @param amount amount transferred
@@ -110,70 +182,133 @@ contract LoyaltyProgramme {
 
     /// event emittend when a transaction of `count` coupons with `couponId` is done
     /// from `sender` account to `reciever` account
-    /// @param transactionId transactionId of the transaction
-    /// @param sender sender account
-    /// @param receiver reciever account
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param businessSender sender account
+    /// @param consumerReceiver reciever account
     /// @param couponId couponId
     /// @param count count of coupons
     event CouponTransactionComplete(
         uint transactionId,
-        address sender,
-        address receiver,
+        address businessSender,
+        address consumerReceiver,
         uint couponId,
         uint count
     );
 
+    /// event emittend when a transaction of `count` coupons with `couponId` is done
+    /// from `sender` account to `reciever` account
+    /// @param transactionId id to uniquely identify the transaction
+    /// @param consumerSender sender account
+    /// @param businessReceiver reciever account
+    /// @param holdingId holdingId of the coupon holding
+    event CouponHoldingTransactionComplete(
+        uint transactionId,
+        address consumerSender,
+        address businessReceiver,
+        uint holdingId
+    );
+
     /// event emitted when a new member is registered at address `address`
     /// with authority `authority`
+    /// @param transactionId id to uniquely identify the transaction
     /// @param memberAddress address of the new joinee
     /// @param authority authority of the new joinee
-    event MemberRegistered(address memberAddress, AccountType authority);
+    event MemberRegistered(
+        uint transactionId,
+        address memberAddress,
+        AccountType authority
+    );
 
-    // event emitted when new coupon are created
-    event CouponCreated(uint couponId);
+    /// event emitted when new coupon are created
+    /// @param couponId id of coupon which is registerd
+    /// @param transactionId id to uniquely identify the transaction
+    event CouponCreated(uint transactionId, uint couponId);
 
     // modifiers
 
-    modifier checkSuperCoinFunds(address sender, uint request) {
-        if (accounts[sender].superCoins < request) {
-            revert InSufficientFunds(request, accounts[sender].superCoins);
-        }
-        _;
-    }
-
-    modifier checkCouponFunds(
+    modifier checkSuperCoinFunds(
+        uint transactionId,
         address sender,
-        uint couponId,
-        uint count
+        uint request
     ) {
-        if (!accounts[sender].coupons[couponId].active) {
-            revert InvalidCoupons(couponId);
-        }
-        if (accounts[sender].coupons[couponId].count < count) {
-            revert InSufficientCoupons(
-                couponId,
-                count,
-                accounts[sender].coupons[couponId].count
+        if (accounts[sender].superCoins < request) {
+            revert InSufficientFunds(
+                transactionId,
+                request,
+                accounts[sender].superCoins
             );
         }
         _;
     }
 
-    modifier checkCouponExpiry(address sender, uint couponId) {
-        if (!accounts[sender].coupons[couponId].active) {
-            revert InvalidCoupons(couponId);
+    modifier checkBusinessCouponFunds(
+        uint transactionId,
+        address businessAddress, // assuming it is passed after checking
+        uint couponId,
+        uint count
+    ) {
+        Coupon storage coupon = couponList[couponId];
+
+        if (!coupon.active) {
+            revert InValidCoupon(transactionId, couponId);
         }
-        if (accounts[sender].coupons[couponId].expiry > block.timestamp) {
-            uint expiry = accounts[sender].coupons[couponId].expiry;
-            delete accounts[sender].coupons[couponId];
-            revert CouponsExpired(expiry, couponId);
+
+        if (coupon.count < count) {
+            revert InSufficientCoupons(
+                transactionId,
+                couponId,
+                count,
+                coupon.count
+            );
         }
         _;
     }
 
-    modifier checkAccess(AccountType allowedAuthority) {
+    modifier checkConsumerCouponValidity(
+        uint transactionId,
+        address consumerAddress, // assuming it is passed after checking
+        address businessAddress,
+        uint holdingId
+    ) {
+        uint holdingIndex = accounts[consumerAddress].couponHoldings[holdingId];
+
+        // all holdingIndexes start from 1
+        if (holdingIndex == 0) {
+            revert InValidCouponHolding(transactionId, holdingId);
+        }
+
+        CouponHolding storage consumerHolding = accounts[consumerAddress]
+            .coupons[holdingIndex];
+        Coupon storage coupon = couponList[consumerHolding.couponId];
+
+        // coupon should be applied to only the business issuing the coupon
+        if (coupon.issuerBusiness != businessAddress) {
+            revert InValidCouponHoldingApplication(
+                transactionId,
+                consumerHolding.couponId,
+                coupon.issuerBusiness,
+                businessAddress
+            );
+        }
+
+        assert(consumerHolding.active != false);
+
+        if (consumerHolding.expiryDate < block.timestamp) {
+            _removeCouponHolding(holdingIndex, consumerAddress);
+            revert CouponHoldingExpired(
+                transactionId,
+                holdingId,
+                consumerHolding.couponId,
+                consumerHolding.expiryDate
+            );
+        }
+        _;
+    }
+
+    modifier checkAccess(uint transactionId, AccountType allowedAuthority) {
         if (accounts[msg.sender].accountType != allowedAuthority) {
-            revert UnAuthorized(
+            revert InValidAuthority(
+                transactionId,
                 allowedAuthority,
                 accounts[msg.sender].accountType
             );
@@ -181,11 +316,16 @@ contract LoyaltyProgramme {
         _;
     }
 
-    modifier checkAccountType(address person, AccountType expectedType) {
-        if (accounts[person].accountType != expectedType) {
+    modifier checkAccountType(
+        uint transactionId,
+        address person,
+        AccountType expectedAuthoirty
+    ) {
+        if (accounts[person].accountType != expectedAuthoirty) {
             revert UnexpectedAccount(
+                transactionId,
                 person,
-                expectedType,
+                expectedAuthoirty,
                 accounts[person].accountType
             );
         }
@@ -194,13 +334,12 @@ contract LoyaltyProgramme {
 
     // internal functions
 
-    // add transaction id
     function _transferSuperCoins(
         uint transactionId,
         address sender,
         address receiver,
         uint amount
-    ) internal checkSuperCoinFunds(sender, amount) {
+    ) internal checkSuperCoinFunds(transactionId, sender, amount) {
         accounts[sender].superCoins -= amount;
         accounts[receiver].superCoins += amount;
         emit SuperCoinTransactionComplete(
@@ -211,36 +350,28 @@ contract LoyaltyProgramme {
         );
     }
 
-    // set expiry after purchase and check expiry
-    // reclaim option
-    // add transactio id
-    function _transferCoupons(
-        uint transactionId,
-        address sender,
-        address receiver,
-        uint couponId,
-        uint count
-    ) internal checkCouponFunds(sender, couponId, count) returns (uint) {
-        Coupon storage senderCoupons = accounts[sender].coupons[couponId];
-        Coupon memory receiverCoupons = accounts[receiver].coupons[couponId];
+    function _removeCouponHolding(
+        uint holdingIndex,
+        address consumerAddress
+    ) internal {
+        uint lastIndex = accounts[consumerAddress].coupons.length - 1;
 
-        senderCoupons.count -= count;
+        uint expiredHoldingId = accounts[consumerAddress]
+            .coupons[holdingIndex]
+            .holdingId;
 
-        if (receiverCoupons.active) {
-            receiverCoupons.count += count;
-        } else {
-            receiverCoupons.count = count;
-        }
+        accounts[consumerAddress].coupons[holdingIndex] = accounts[
+            consumerAddress
+        ].coupons[lastIndex];
 
-        accounts[receiver].coupons[couponId] = receiverCoupons; // storage variable assigned to memory, data gets copied
-        emit CouponTransactionComplete(
-            transactionId,
-            sender,
-            receiver,
-            couponId,
-            count
-        );
-        return count * senderCoupons.superCoins;
+        uint holdingId = accounts[consumerAddress]
+            .coupons[holdingIndex]
+            .holdingId;
+
+        accounts[consumerAddress].coupons.pop();
+
+        accounts[consumerAddress].couponHoldings[holdingId] = holdingIndex;
+        delete accounts[consumerAddress].couponHoldings[expiredHoldingId]; // will be set to 0
     }
 
     // public functions
@@ -257,15 +388,36 @@ contract LoyaltyProgramme {
     function consumerTokenPayment(
         uint transactionId,
         uint amount
-    ) public checkAccess(AccountType.CONSUMER) {
+    ) public checkAccess(transactionId, AccountType.CONSUMER) {
         _transferSuperCoins(transactionId, msg.sender, OWNER_ADDRESS, amount);
     }
 
-    function consumerCouponPayment(uint transactionId, uint couponId) public {
-        // delete coupon
+    function consumerCouponPayment(
+        uint transactionId,
+        uint holdingId,
+        address businessAddress
+    )
+        public
+        checkAccess(transactionId, AccountType.CONSUMER)
+        checkAccountType(transactionId, businessAddress, AccountType.BUSINESS)
+        checkConsumerCouponValidity(
+            transactionId,
+            msg.sender,
+            businessAddress,
+            holdingId
+        )
+    {
+        uint holdingIndex = accounts[msg.sender].couponHoldings[holdingId];
+        _removeCouponHolding(holdingIndex, msg.sender);
+
+        emit CouponHoldingTransactionComplete(
+            transactionId,
+            msg.sender,
+            businessAddress,
+            holdingId
+        );
     }
 
-    // remove check expiry
     function purchaseCoupon(
         uint transactionId,
         address businessAddress,
@@ -273,106 +425,190 @@ contract LoyaltyProgramme {
         uint count
     )
         public
-        checkAccess(AccountType.CONSUMER)
-        checkAccountType(businessAddress, AccountType.BUSINESS)
-        checkCouponFunds(businessAddress, couponId, count)
-        checkCouponExpiry(businessAddress, couponId)
-    {
-        _transferCoupons(
+        checkAccess(transactionId, AccountType.CONSUMER)
+        checkAccountType(transactionId, businessAddress, AccountType.BUSINESS)
+        checkBusinessCouponFunds(
             transactionId,
-            msg.sender,
             businessAddress,
             couponId,
             count
+        )
+    {
+        Account storage consumerAccount = accounts[msg.sender];
+        uint holdingId = consumerAccount.currentHoldingId;
+        uint holdingIndex = consumerAccount.coupons.length;
+        Coupon storage coupon = couponList[couponId];
+        CouponHolding[] storage couponHoldings = accounts[msg.sender].coupons;
+
+        // push coupons into consumer coupons list
+        for (uint i = 0; i < count; i++) {
+            couponHoldings.push(
+                CouponHolding(
+                    holdingId,
+                    couponId,
+                    block.timestamp + coupon.expiryTime,
+                    true
+                )
+            );
+            consumerAccount.couponHoldings[holdingId] = holdingIndex;
+            holdingId = holdingId + 1;
+            holdingIndex = holdingIndex + 1;
+        }
+        consumerAccount.currentHoldingId = holdingId;
+
+        // transfer coins into e-commerce and business account
+        uint totalCost = count * coupon.superCoins;
+        uint ownerCut = totalCost / couponRatio;
+        uint businessCut = totalCost - couponRatio;
+        _transferSuperCoins(transactionId, msg.sender, OWNER_ADDRESS, ownerCut);
+        _transferSuperCoins(
+            transactionId,
+            msg.sender,
+            businessAddress,
+            businessCut
         );
-        // flipkart token transfer and org token transfer
-        // set expiry
+
+        emit CouponTransactionComplete(
+            transactionId,
+            businessAddress,
+            msg.sender,
+            couponId,
+            count
+        );
     }
 
     // public business functions
 
     function redeemTokens(uint amount) public {
-        //  better flow requires confirmation of both the parties
+        //  better flow requires confirmation amountof both the parties
     }
 
     function createCoupons(
-        uint couponId,
+        uint transactionId,
         uint count,
         uint cost,
         uint discount,
-        string calldata productCategory,
-        uint thresholdvalue,
-        string calldata productId,
+        uint productCategory,
+        uint thresholdValue,
+        uint productId,
         CouponType couponType,
-        uint expiry
-    ) public checkAccess(AccountType.BUSINESS) {
+        uint expiryTime
+    ) public checkAccess(transactionId, AccountType.BUSINESS) returns (uint) {
         // checks
-        require(count > 0, "count of tokens should be greater than 0");
 
-        if (couponType == CouponType.UNIQUE) {
-            require(
-                bytes(productId).length != 0,
-                "productId should not be empty when coupon type is unique product"
-            );
-        } else {
-            require(
-                bytes(productCategory).length != 0,
-                "product category should not be empty when coupon type is category"
-            );
-
-            require(
-                thresholdvalue >= 0,
-                "threshold value for the product should be always greater than 0"
+        if (count <= 0) {
+            revert IntegrityConstraintFailed(
+                transactionId,
+                "count should be > 0"
             );
         }
 
-        require(
-            discount >= 0 * decimalFactor && discount <= 100 * decimalFactor,
-            "discount should be valid ( between 0 to 100 )"
+        if (cost < 0) {
+            revert IntegrityConstraintFailed(
+                transactionId,
+                "cost should be >= 0"
+            );
+        }
+
+        if (discount < 0 || discount > 100) {
+            revert IntegrityConstraintFailed(
+                transactionId,
+                "discount should be >= 0 and <= 100"
+            );
+        }
+
+        if (couponType == CouponType.UNIQUE) {
+            if (productId < 0)
+                revert IntegrityConstraintFailed(
+                    transactionId,
+                    "when coupon type is unique then productId can't be negative"
+                );
+        } else if (couponType == CouponType.CATEGORY) {
+            if (productCategory < 0) {
+                revert IntegrityConstraintFailed(
+                    transactionId,
+                    "when coupon type is category wise then productCategories can't be negative"
+                );
+            }
+
+            if (thresholdValue < 0) {
+                revert IntegrityConstraintFailed(
+                    transactionId,
+                    "when coupon type is category wise then threshold can't be negative"
+                );
+            }
+        }
+
+        if (expiryTime <= 0) {
+            revert IntegrityConstraintFailed(
+                transactionId,
+                "expiryTime must be > 0"
+            );
+        }
+
+        uint couponId = currentCouponId;
+        couponList.push(
+            Coupon(
+                couponId,
+                msg.sender,
+                cost,
+                count,
+                discount,
+                productCategory,
+                thresholdValue,
+                productId,
+                couponType,
+                expiryTime,
+                true
+            )
         );
 
-        // update no checks
-        require(
-            expiry > block.timestamp,
-            "expiry date of the coupons must be after the "
-        );
+        currentCouponId = currentCouponId + 1;
+        return couponId;
+    }
 
-        Coupon storage coupons = accounts[msg.sender].coupons[couponId];
-        coupons.superCoins = cost;
-        coupons.issuerBusiness = msg.sender;
-        coupons.count = count;
-        coupons.discount = discount;
-        coupons.productCategory = productCategory;
-        coupons.thresholdvalue = thresholdvalue;
-        coupons.productId = productId;
-        coupons.couponType = couponType;
-        coupons.expiry = expiry;
+    function deactiveCoupon(
+        uint transactionId,
+        uint couponId
+    ) public checkAccess(transactionId, AccountType.BUSINESS) {
+        if (!couponList[couponId].active) return;
 
-        emit CouponCreated(couponId);
+        if (couponList[couponId].issuerBusiness != msg.sender) {
+            revert UnAuthorized(transactionId, msg.sender);
+        }
+
+        couponList[couponId].active = false;
     }
 
     // public owner functions
 
     function registerMember(
+        uint transactionId,
         address memberAddress,
         AccountType accountType
-    ) public checkAccess(AccountType.OWNER) {
+    ) public checkAccess(transactionId, AccountType.OWNER) {
         if (accounts[memberAddress].accountType != AccountType.UNREGISTERED) {
-            revert InValidRegistration(accounts[memberAddress].accountType);
+            revert InValidRegistration(
+                transactionId,
+                accounts[memberAddress].accountType
+            );
         }
         Account storage memberAccount = accounts[memberAddress];
         memberAccount.superCoins = 0;
         memberAccount.accountType = accountType;
-        emit MemberRegistered(memberAddress, accountType);
+        memberAccount.coupons.push(CouponHolding(0, 0, 0, false)); // pass 0th index as invalid element ( active = false )
+        memberAccount.currentHoldingId = 1;
+        emit MemberRegistered(transactionId, memberAddress, accountType);
     }
 
     function payBusiness(
         uint transactionId,
         address business,
         uint amount
-    ) public checkAccess(AccountType.OWNER) {
+    ) public checkAccess(transactionId, AccountType.OWNER) {
         if (accounts[business].accountType != AccountType.BUSINESS) {
             revert InValidRecipient(
+                transactionId,
                 AccountType.BUSINESS,
                 accounts[business].accountType
             );
@@ -381,8 +617,9 @@ contract LoyaltyProgramme {
     }
 
     function mintTokens(
+        uint transactionId,
         uint amount
-    ) public checkAccess(AccountType.OWNER) returns (uint) {
+    ) public checkAccess(transactionId, AccountType.OWNER) returns (uint) {
         accounts[msg.sender].superCoins += amount;
         return accounts[msg.sender].superCoins;
     }
