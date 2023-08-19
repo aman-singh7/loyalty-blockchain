@@ -13,6 +13,7 @@ type Controller struct {
 }
 
 // TODO: replace validator with echo.validator
+// TODO: make a transaction id generator
 
 func (c *Controller) GetUser(ctx echo.Context) error {
 	return ctx.JSON(http.StatusNotImplemented, echo.Map{"message": "get user api not implemented"})

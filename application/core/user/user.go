@@ -29,8 +29,8 @@ func (s *Service) Discount(userCoupon coupon.Coupon) (int, error) {
 	return userCoupon.Discount, nil
 }
 
-func (s *Service) PurchaseProduct(request user.DomainPurchaseProductRequest) error {
-	// TODO: validate user and
+func (s *Service) PurchaseProduct(request user.PurchaseProductRequest) error {
+	// TODO: validate user
 	_, err := s.Discount(request.Coupon)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon has expired"})
@@ -51,13 +51,13 @@ func (s *Service) PurchaseProduct(request user.DomainPurchaseProductRequest) err
 	return nil
 }
 
-func (s *Service) PurchaseCoupon(request user.DomainPurchaseCouponRequest) error {
+func (s *Service) PurchaseCoupon(request user.PurchaseCouponRequest) error {
 	// TODO: validate user
 	// TODO: call sol_purchase_coupon()
 	return nil
 }
 
-func (s *Service) ReferralReward(request user.DomainReferralRewardRequest) error {
+func (s *Service) ReferralReward(request user.ReferralRewardRequest) error {
 	// TODO: validate user1 and user2
 	// TODO: give reward tokens
 	return nil
