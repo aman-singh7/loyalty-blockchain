@@ -455,17 +455,15 @@ contract LoyaltyProgramme {
             holdingIndex = holdingIndex + 1;
         }
         consumerAccount.currentHoldingId = holdingId;
+        coupon.count -= count;
 
-        // transfer coins into e-commerce and business account
+        // transfer coins into e-commerce account
         uint totalCost = count * coupon.superCoins;
-        uint ownerCut = totalCost / couponRatio;
-        uint businessCut = totalCost - couponRatio;
-        _transferSuperCoins(transactionId, msg.sender, OWNER_ADDRESS, ownerCut);
         _transferSuperCoins(
             transactionId,
             msg.sender,
-            businessAddress,
-            businessCut
+            OWNER_ADDRESS,
+            totalCost
         );
 
         emit CouponTransactionComplete(
@@ -483,8 +481,24 @@ contract LoyaltyProgramme {
         //  better flow requires confirmation amountof both the parties
     }
 
+    function deactiveCoupon(
+        uint transactionId,
+        uint couponId
+    ) public checkAccess(transactionId, AccountType.BUSINESS) {
+        if (!couponList[couponId].active) return;
+
+        if (couponList[couponId].issuerBusiness != msg.sender) {
+            revert UnAuthorized(transactionId, msg.sender);
+        }
+
+        couponList[couponId].active = false;
+    }
+
+    // public owner functions
+
     function createCoupons(
         uint transactionId,
+        address issuerBusiness,
         uint count,
         uint cost,
         uint discount,
@@ -492,8 +506,9 @@ contract LoyaltyProgramme {
         uint thresholdValue,
         uint productId,
         CouponType couponType,
-        uint expiryTime
-    ) public checkAccess(transactionId, AccountType.BUSINESS) returns (uint) {
+        uint expiryTime,
+        uint creationCost
+    ) public checkAccess(transactionId, AccountType.OWNER) returns (uint) {
         // checks
 
         if (count <= 0) {
@@ -550,7 +565,7 @@ contract LoyaltyProgramme {
         couponList.push(
             Coupon(
                 couponId,
-                msg.sender,
+                issuerBusiness,
                 cost,
                 count,
                 discount,
@@ -563,24 +578,10 @@ contract LoyaltyProgramme {
             )
         );
 
+        accounts[issuerBusiness].superCoins -= creationCost;
         currentCouponId = currentCouponId + 1;
         return couponId;
     }
-
-    function deactiveCoupon(
-        uint transactionId,
-        uint couponId
-    ) public checkAccess(transactionId, AccountType.BUSINESS) {
-        if (!couponList[couponId].active) return;
-
-        if (couponList[couponId].issuerBusiness != msg.sender) {
-            revert UnAuthorized(transactionId, msg.sender);
-        }
-
-        couponList[couponId].active = false;
-    }
-
-    // public owner functions
 
     function registerMember(
         uint transactionId,
