@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aman-singh7/loyalty-blockchain/application/api"
 	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
 	"github.com/aman-singh7/loyalty-blockchain/domain/user"
 	userRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/user"
@@ -12,11 +13,13 @@ import (
 
 type Service struct {
 	repo *userRepo.Repository
+	api  *api.Api
 }
 
-func NewService(repo *userRepo.Repository) *Service {
+func NewService(repo *userRepo.Repository, api *api.Api) *Service {
 	return &Service{
 		repo: repo,
+		api:  api,
 	}
 }
 
