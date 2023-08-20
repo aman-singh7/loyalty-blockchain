@@ -8,7 +8,7 @@ import (
 func UserRoutes(g *echo.Group, controller *userController.Controller) {
 	routerUser := g.Group("/user")
 	{
-		routerUser.GET("/", controller.GetUser)
+		routerUser.GET("/balance", controller.FetchBalance)
 		routerUser.GET("/discount", controller.Discount)
 		routerUser.POST("/purchase", controller.PurchaseProduct)
 		routerUser.POST("/coupon", controller.PurchaseCoupon)

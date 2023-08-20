@@ -1,4 +1,4 @@
-package user
+package admin
 
 type Repository struct {
 }

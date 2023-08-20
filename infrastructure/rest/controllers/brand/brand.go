@@ -19,10 +19,10 @@ func (c *Controller) GetBrand(ctx echo.Context) error {
 
 func (c *Controller) CouponPrice(ctx echo.Context) error {
 	var request CouponPriceRequest
-	if err := ctx.Bind(request); err != nil {
+	if err := ctx.Bind(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := ctx.Validate(&request); err != nil {
+	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call calculating price
@@ -31,10 +31,10 @@ func (c *Controller) CouponPrice(ctx echo.Context) error {
 
 func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	var request CreateCouponRequest
-	if err := ctx.Bind(request); err != nil {
+	if err := ctx.Bind(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := ctx.Validate(&request); err != nil {
+	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call service func
@@ -43,10 +43,10 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 
 func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	var request RedeemTokensRequest
-	if err := ctx.Bind(request); err != nil {
+	if err := ctx.Bind(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := ctx.Validate(&request); err != nil {
+	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: call service func

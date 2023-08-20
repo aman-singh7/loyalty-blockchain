@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
@@ -8,16 +9,36 @@ import (
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/labstack/echo/v4"
+	"github.com/spf13/viper"
 )
 
 type Service struct {
-	api *Api
+	api  *Api
+	opts *utils.TransactOpts
 }
 
-func NewService(api *Api) *Service {
+func NewService(api *Api, opts *utils.TransactOpts) *Service {
 	return &Service{
 		api:  api,
+		opts: opts,
 	}
+}
+
+func (s *Service) FetchAccountBalance(transactionId int, address common.Address, from common.Address) (int, error) {
+	opts := bind.CallOpts{
+		Pending: false,
+		From:    from,
+		Context: context.Background(),
+	}
+
+	balance, err := s.api.GetAccountBalance(&opts, utils.BigInt(transactionId), address)
+	if err != nil {
+		return 0, echo.NewHTTPError(http.StatusInternalServerError, echo.Map{
+			"message": "fetch balance failed",
+		})
+	}
+
+	return utils.ToInt(balance), nil
 }
 
 func (s *Service) PurchaseProductWithCoupon(transactionId int, coupon coupon.Coupon, address common.Address) error {
@@ -65,5 +86,19 @@ func (s *Service) RedeemTokens(transactionId int, amount int) error {
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
+	return nil
+}
+
+func (s *Service) RegisterMember(memberAddr common.Address, accountType uint8) error {
+	// 1 -> Customer 2 -> Brand
+	PRIVATE_KEY := viper.GetString("PrivateKey")
+	opts := s.opts.GetOpts(PRIVATE_KEY)
+	_, err := s.api.RegisterMember(opts, utils.BigInt(2), memberAddr, accountType)
+	if err != nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, echo.Map{
+			"message": "register member failed",
+		})
+	}
+
 	return nil
 }

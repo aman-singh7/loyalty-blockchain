@@ -9,6 +9,7 @@ import (
 	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
 	"github.com/aman-singh7/loyalty-blockchain/domain/user"
 	userRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/user"
+	"github.com/ethereum/go-ethereum/common"
 	"github.com/labstack/echo/v4"
 )
 
@@ -25,6 +26,15 @@ func NewService(repo *userRepo.Repository, api *api.Service) *Service {
 }
 
 // TODO: make enum for errors
+
+func (s *Service) FetchBalance(address common.Address) (int, error) {
+	bal, err := s.api.FetchAccountBalance(1, address, address)
+	if err != nil {
+		return 0, err
+	}
+
+	return bal, nil
+}
 
 func (s *Service) Discount(userCoupon coupon.Coupon) (int, error) {
 	if isActive := (userCoupon.ExpiryDate < time.Now().Second()); !isActive {
@@ -51,7 +61,7 @@ func (s *Service) PurchaseProduct(request user.PurchaseProductRequest) error {
 			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
 		}
 	}
-	if(strconv.Itoa(request.Coupon.CouponID) != "" && request.Tokens != 0) {
+	if strconv.Itoa(request.Coupon.CouponID) != "" && request.Tokens != 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon and tokens cannot be in same transaction"})
 	}
 	if request.Tokens != 0 {
