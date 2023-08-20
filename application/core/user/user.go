@@ -50,7 +50,7 @@ func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon and tokens cannot be in same transaction"})
 	}
 
-	// TODO: validate user
+	// TODO[GSM]: send request using userAddress
 	if request.Coupon != nil {
 		_, err := s.Discount(request.Coupon)
 		if err != nil {
@@ -88,7 +88,7 @@ func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
 }
 
 func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
-	// TODO: send request using userAddress
+	// TODO[GSM]: send request using userAddress
 	if err := s.api.PurchaseCoupon(request.Coupon, request.Count, request.Coupon.IssuerBusiness); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -97,6 +97,7 @@ func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
 
 func (s *Service) ReferralReward(request *user.ReferralRewardRequest) error {
 	// TODO: validate user1 and user2
+	// TODO[GSM]: send request using userAddress
 	if err := s.api.RewardToken(request.UserAddress, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
 	}

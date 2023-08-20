@@ -32,7 +32,7 @@ func (s* Service) CouponPrice(request *brand.CouponPriceRequest) (int, error) {
 }
 
 func (s* Service) CreateCoupon(request *brand.CreateCouponRequest) error {
-	// TODO: validate brand
+	// TODO[GSM]: send request using brandAddress
 	if err := s.api.CreateCoupon(request.Coupon, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -40,7 +40,7 @@ func (s* Service) CreateCoupon(request *brand.CreateCouponRequest) error {
 }
 
 func (s* Service) RedeemTokens(request *brand.RedeemTokensRequest) error {
-	// TODO: validate brand
+	// TODO[GSM]: send request using brandAddress
 	if err := s.api.RedeemTokens(request.BrandAddress, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
