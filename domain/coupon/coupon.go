@@ -14,15 +14,16 @@ const (
 )
 
 type Coupon struct {
-	IssuerBusiness  common.Address `json:"issuerBusiness" validate:"required"`
-	SuperCoins      big.Int        `json:"superCoins" validate:"required"`
-	Count           big.Int        `json:"count" validate:"required"`
-	Discount        big.Int        `json:"discount" validate:"required"`
+	IssuerBusiness  common.Address `json:"issuerBusiness"`
+	SuperCoins      big.Int        `json:"superCoins"`
+	Count           big.Int        `json:"count"`
+	Discount        big.Int        `json:"discount"`
 	ProductCategory big.Int        `json:"productCategory"`
 	ThresholdValue  big.Int        `json:"thresholdvalue"`
 	ProductId       big.Int        `json:"productId"`
-	Type            CouponType     `json:"couponType" validate:"required"`
+	Type            CouponType     `json:"couponType"`
 	ExpiryDate      big.Int        `json:"expiryDate"`
-	CouponID        big.Int        `json:"couponId" validate:"required"`
+	CouponID        big.Int        `json:"couponId"`
 	HoldingID       big.Int        `json:"holdingId"`
 }
+
