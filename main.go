@@ -31,6 +31,11 @@ func main() {
 	}
 
 	// Middleware
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowMethods: []string{"POST", "GET", "OPTIONS", "PUT", "DELETE"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 

@@ -1,9 +1,10 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.21;
 
-contract LoyaltyProgramme {
-    // Contract constructs
+import "@openzeppelin/contracts/metatx/ERC2771Context.sol";
 
+contract LoyaltyProgramme is ERC2771Context {
+    // Contract constructs
     enum AccountType {
         UNREGISTERED,
         CONSUMER,
@@ -224,7 +225,7 @@ contract LoyaltyProgramme {
     // modifiers
 
     modifier checkOwner(address account, uint transactionId) {
-        if (msg.sender != OWNER_ADDRESS && msg.sender != account) {
+        if (_msgSender() != OWNER_ADDRESS && _msgSender() != account) {
             revert UnAuthorized(transactionId, account);
         }
         _;
@@ -310,11 +311,11 @@ contract LoyaltyProgramme {
     }
 
     modifier checkAccess(uint transactionId, AccountType allowedAuthority) {
-        if (accounts[msg.sender].accountType != allowedAuthority) {
+        if (accounts[_msgSender()].accountType != allowedAuthority) {
             revert InValidAuthority(
                 transactionId,
                 allowedAuthority,
-                accounts[msg.sender].accountType
+                accounts[_msgSender()].accountType
             );
         }
         _;
@@ -390,13 +391,27 @@ contract LoyaltyProgramme {
         delete accounts[consumerAddress].couponHoldings[expiredHoldingId]; // will be set to 0
     }
 
+    /**
+     * Set the trustedForwarder address either in constructor or
+     * in other init function in your contract
+     */
     // public functions
-
-    constructor() {
-        OWNER_ADDRESS = msg.sender;
+    constructor(
+        address _trustedForwarder
+    ) public ERC2771Context(_trustedForwarder) {
+        OWNER_ADDRESS = _msgSender();
         Account storage onwerAccount = accounts[OWNER_ADDRESS]; // spelling
         onwerAccount.superCoins = 0;
         onwerAccount.accountType = AccountType.OWNER;
+    }
+
+    /**
+     * Override this function.
+     * This version is to keep track of BaseRelayRecipient you are using
+     * in your contract.
+     */
+    function versionRecipient() external view virtual returns (string memory) {
+        return "1";
     }
 
     // public consumer functions
@@ -405,7 +420,7 @@ contract LoyaltyProgramme {
         uint transactionId,
         uint amount
     ) public checkAccess(transactionId, AccountType.CONSUMER) {
-        _transferSuperCoins(transactionId, msg.sender, OWNER_ADDRESS, amount);
+        _transferSuperCoins(transactionId, _msgSender(), OWNER_ADDRESS, amount);
     }
 
     function consumerCouponPayment(
@@ -418,17 +433,17 @@ contract LoyaltyProgramme {
         checkAccountType(transactionId, businessAddress, AccountType.BUSINESS)
         checkConsumerCouponValidity(
             transactionId,
-            msg.sender,
+            _msgSender(),
             businessAddress,
             holdingId
         )
     {
-        uint holdingIndex = accounts[msg.sender].couponHoldings[holdingId];
-        _removeCouponHolding(holdingIndex, msg.sender);
+        uint holdingIndex = accounts[_msgSender()].couponHoldings[holdingId];
+        _removeCouponHolding(holdingIndex, _msgSender());
 
         emit CouponHoldingTransactionComplete(
             transactionId,
-            msg.sender,
+            _msgSender(),
             businessAddress,
             holdingId
         );
@@ -450,11 +465,11 @@ contract LoyaltyProgramme {
             count
         )
     {
-        Account storage consumerAccount = accounts[msg.sender];
+        Account storage consumerAccount = accounts[_msgSender()];
         uint holdingId = consumerAccount.currentHoldingId;
         uint holdingIndex = consumerAccount.coupons.length;
         Coupon storage coupon = couponList[couponId];
-        CouponHolding[] storage couponHoldings = accounts[msg.sender].coupons;
+        CouponHolding[] storage couponHoldings = accounts[_msgSender()].coupons;
 
         // push coupons into consumer coupons list
         for (uint i = 0; i < count; i++) {
@@ -477,7 +492,7 @@ contract LoyaltyProgramme {
         uint totalCost = count * coupon.superCoins;
         _transferSuperCoins(
             transactionId,
-            msg.sender,
+            _msgSender(),
             OWNER_ADDRESS,
             totalCost
         );
@@ -485,7 +500,7 @@ contract LoyaltyProgramme {
         emit CouponTransactionComplete(
             transactionId,
             businessAddress,
-            msg.sender,
+            _msgSender(),
             couponId,
             count
         );
@@ -503,8 +518,8 @@ contract LoyaltyProgramme {
     ) public checkAccess(transactionId, AccountType.BUSINESS) {
         if (!couponList[couponId].active) return;
 
-        if (couponList[couponId].issuerBusiness != msg.sender) {
-            revert UnAuthorized(transactionId, msg.sender);
+        if (couponList[couponId].issuerBusiness != _msgSender()) {
+            revert UnAuthorized(transactionId, _msgSender());
         }
 
         couponList[couponId].active = false;
@@ -636,8 +651,8 @@ contract LoyaltyProgramme {
         uint transactionId,
         uint amount
     ) public checkAccess(transactionId, AccountType.OWNER) returns (uint) {
-        accounts[msg.sender].superCoins += amount;
-        return accounts[msg.sender].superCoins;
+        accounts[_msgSender()].superCoins += amount;
+        return accounts[_msgSender()].superCoins;
     }
 
     function getAccountBalance(

@@ -8,7 +8,7 @@ import (
 func AuthRoutes(g *echo.Group, controller *userController.Controller) {
 	routerUser := g.Group("/auth")
 	{
-		routerUser.GET("/signin", controller.CreateUser)
+		routerUser.POST("/", controller.CreateUser)
 		routerUser.GET("/token", controller.GenerateToken)
 	}
 }
