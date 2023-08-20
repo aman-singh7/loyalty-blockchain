@@ -8,6 +8,7 @@ import (
 
 	firebase "firebase.google.com/go/v4"
 	"github.com/aman-singh7/loyalty-blockchain/application/security/jwt"
+	domain "github.com/aman-singh7/loyalty-blockchain/domain/auth"
 	userRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/user"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
@@ -38,22 +39,22 @@ func NewService(repo *userRepo.Repository) *Service {
 	}
 }
 
-func (s *Service) UserLogin(uid int, token string) (*Auth, error) {
+func (s *Service) UserLogin(request *domain.CreateUserRequest) (*Auth, error) {
 	ctx := context.Background()
 	client, err := s.app.Auth(ctx)
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	_, err = client.VerifyIDTokenAndCheckRevoked(ctx, token)
+	_, err = client.VerifyIDTokenAndCheckRevoked(ctx, request.Token)
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: user repo
-	// userId, err := s.repo.UserExistsWithUid(uid)
+	// userId, err := s.repo.UserExistsWithUid(request.UID)
 	userId := "434"
 	if userId == "" {
 		// TODO: create user against this id
-		// userId, err := s.repo.CreateUserWithUid(uid)
+		// userId, err := s.repo.CreateUserWithUid(request.UID)
 	}
 	accessToken, err := jwt.GenerateJWTToken(userId, "access")
 	if err != nil {
@@ -71,14 +72,17 @@ func (s *Service) UserLogin(uid int, token string) (*Auth, error) {
 	}, nil
 }
 
-func (s *Service) GenerateAccessTokenFromRefreshToken(refreshToken string) (*Auth, error) {
-	claims, err := jwt.GetClaimsAndVerifyToken(refreshToken, "refresh")
+func (s *Service) GenerateAccessTokenFromRefreshToken(request domain.GenerateTokenRequest) (*Auth, error) {
+	claims, err := jwt.GetClaimsAndVerifyToken(request.Token, "refresh")
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: check if user exists
 	userId := claims["uid"].(string)
 	// userId, err := s.repo.UserExistsWithUid(claims["uid"].(string))
+	// if userId == "" {
+	// 	return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	// }
 	// if err != nil {
 	// 	return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	// }
