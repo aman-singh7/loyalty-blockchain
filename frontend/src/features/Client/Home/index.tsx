@@ -1,165 +1,10 @@
-import { CouponType } from 'app/types/enums/contractEnums';
 import Coupons from 'app/types/interfaces/coupons';
 import React, { useRef } from 'react';
 import { useDraggable } from 'react-use-draggable-scroll';
 import superCoin from 'app/assets/icons/super-coin.svg';
 import nextIcon from 'app/assets/icons/next-icon.svg';
 import './index.scss';
-
-const couponList: Map<string, Coupons[]> = new Map([
-  [
-    'amazon',
-    [
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(100),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-    ],
-  ],
-  [
-    'netflix',
-    [
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(100),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(100),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-      {
-        couponId: BigInt(0),
-        issuerBusiness: 'bussiness',
-        superCoins: BigInt(0),
-        count: BigInt(0),
-        discount: BigInt(0),
-        productCategory: BigInt(0),
-        thresholdValue: BigInt(0),
-        productId: BigInt(0),
-        couponType: CouponType.UNIQUE,
-        expiryTime: BigInt(0),
-        productText: 'ABCD fridges',
-        active: true,
-      },
-    ],
-  ],
-]);
-
-const count = BigInt(496);
+import { couponList, superCoinCount } from 'app/services/data/dummy_data/dummy';
 
 const Home: React.FC = () => {
   const ref =
@@ -177,7 +22,7 @@ const Home: React.FC = () => {
           className='client-home-token-container-supercoin-image'
         />
         <div className='client-home-token-container-supercoin'>
-          {count.toString()}
+          {superCoinCount.toString()}
         </div>
       </div>
       <button className='client-home-token-activity'>

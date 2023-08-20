@@ -1,13 +1,13 @@
 import React from 'react';
 import AppBar from 'app/components/AppBar';
-import Home from 'features/Client/Home';
+import Histoy from 'features/Client/History';
 import './index.scss';
 
 function App() {
   return (
     <>
       <AppBar />
-      <Home />
+      <Histoy />
     </>
   );
 }
