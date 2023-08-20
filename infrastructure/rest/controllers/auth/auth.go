@@ -20,11 +20,11 @@ func (c *Controller) CreateUser(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	serviceRequest := toDomainCreateUserRequest(&request)
-	jwtToken, err := c.AuthService.CreateUser(serviceRequest)
+	authData, err := c.AuthService.CreateUser(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	return ctx.JSON(http.StatusOK, echo.Map{"accessToken": jwtToken.AccessToken, "refreshToken": jwtToken.RefreshToken})
+	return ctx.JSON(http.StatusOK, authData)
 }
 
 func (c *Controller) GenerateToken(ctx echo.Context) error {
@@ -40,5 +40,5 @@ func (c *Controller) GenerateToken(ctx echo.Context) error {
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	return ctx.JSON(http.StatusOK, echo.Map{"accessToken": jwtToken.AccessToken, "refreshToken": jwtToken.RefreshToken})
+	return ctx.JSON(http.StatusOK, jwtToken)
 }

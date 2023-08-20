@@ -11,6 +11,7 @@ type User struct {
 	UID           string `json:"uid"`
 	PlatformUID   string `json:"platformUid"`
 	Name          string `json:"name"`
+	Email         string `json:"email"`
 	WalletAddress string `json:"walletAddress"`
 	AccountType   uint8  `json:"accountType"`
 }

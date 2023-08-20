@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/aman-singh7/loyalty-blockchain/application/api"
+	"github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/config"
 	"github.com/aman-singh7/loyalty-blockchain/infrastructure/rest/routes"
 	"github.com/aman-singh7/loyalty-blockchain/utils"
 	"github.com/ethereum/go-ethereum"
@@ -58,7 +59,10 @@ func main() {
 	opts := utils.NewTransactOpts(client)
 	srvc := api.NewService(conn, opts)
 
-	routes.ApplicationV1Router(e, srvc)
+	// Database
+	db := config.NewDatabase()
+
+	routes.ApplicationV1Router(e, srvc, db)
 
 	PORT := viper.GetInt("Port")
 	addr := fmt.Sprintf(":%d", PORT)

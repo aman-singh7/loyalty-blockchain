@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -9,16 +10,17 @@ import (
 	firebase "firebase.google.com/go/v4"
 	"github.com/aman-singh7/loyalty-blockchain/application/security/jwt"
 	domain "github.com/aman-singh7/loyalty-blockchain/domain/auth"
+	"github.com/aman-singh7/loyalty-blockchain/domain/user"
 	userRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/user"
 	"github.com/labstack/echo/v4"
 	"google.golang.org/api/option"
 )
 
 type Auth struct {
-	AccessToken               string    `json:"access_token"`
-	RefreshToken              string    `json:"refresh_token"`
-	ExpirationAccessDateTime  time.Time `json:"expirationAccessDateTime"`
-	ExpirationRefreshDateTime time.Time `json:"expirationRefreshDateTime"`
+	AccessToken     string    `json:"accessToken"`
+	RefreshToken    string    `json:"refreshToken"`
+	ExpAccessToken  time.Time `json:"expAccessToken"`
+	ExpRefreshToken time.Time `json:"expRefreshToken"`
 }
 
 type Service struct {
@@ -39,7 +41,7 @@ func NewService(repo *userRepo.Repository) *Service {
 	}
 }
 
-func (s *Service) CreateUser(request *domain.CreateUserRequest) (*Auth, error) {
+func (s *Service) CreateUser(request *domain.CreateUserRequest) (*AuthenticatedUser, error) {
 	ctx := context.Background()
 	client, err := s.app.Auth(ctx)
 	if err != nil {
@@ -49,13 +51,28 @@ func (s *Service) CreateUser(request *domain.CreateUserRequest) (*Auth, error) {
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user repo
-	// userId, err := s.repo.UserExistsWithUid(request.UID)
-	userId := "434"
+	userId, _ := s.repo.UserExists(request.UID)
+	var domainUser *user.User
 	if userId == "" {
-		// TODO: create user against this id
-		// userId, err := s.repo.CreateUserWithUid(request.UID)
+		user, err := client.GetUser(ctx, request.UID)
+		if err != nil {
+			return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
+		}
+
+		dUser := newFirebaseUserMapper(user)
+		domainUser, err = s.repo.Create(dUser)
+		if err != nil {
+			return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
+		}
+
+		userId = domainUser.UID
+	} else {
+		domainUser, err = s.repo.GetByPUID(request.UID)
+		if err != nil {
+			return nil, fmt.Errorf("[CreateUser] Error: %v", err)
+		}
 	}
+
 	accessToken, err := jwt.GenerateJWTToken(userId, "access")
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -64,12 +81,12 @@ func (s *Service) CreateUser(request *domain.CreateUserRequest) (*Auth, error) {
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	return &Auth{
-		AccessToken:               accessToken.Token,
-		RefreshToken:              refreshtoken.Token,
-		ExpirationAccessDateTime:  accessToken.ExpirationTime,
-		ExpirationRefreshDateTime: refreshtoken.ExpirationTime,
-	}, nil
+	return authUserMapper(domainUser, &Auth{
+		AccessToken:     accessToken.Token,
+		RefreshToken:    refreshtoken.Token,
+		ExpAccessToken:  accessToken.ExpirationTime,
+		ExpRefreshToken: refreshtoken.ExpirationTime,
+	}), nil
 }
 
 func (s *Service) GenerateAccessTokenFromRefreshToken(request *domain.GenerateTokenRequest) (*Auth, error) {
@@ -79,13 +96,11 @@ func (s *Service) GenerateAccessTokenFromRefreshToken(request *domain.GenerateTo
 	}
 	// TODO: check if user exists
 	userId := claims["uid"].(string)
-	// userId, err := s.repo.UserExistsWithUid(claims["uid"].(string))
-	// if userId == "" {
-	// 	return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
-	// }
-	// if err != nil {
-	// 	return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
-	// }
+	_, err = s.repo.UserExists(userId)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+
 	accessToken, err := jwt.GenerateJWTToken(userId, "access")
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -95,9 +110,9 @@ func (s *Service) GenerateAccessTokenFromRefreshToken(request *domain.GenerateTo
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return &Auth{
-		AccessToken:               accessToken.Token,
-		RefreshToken:              refreshtoken.Token,
-		ExpirationAccessDateTime:  accessToken.ExpirationTime,
-		ExpirationRefreshDateTime: refreshtoken.ExpirationTime,
+		AccessToken:     accessToken.Token,
+		RefreshToken:    refreshtoken.Token,
+		ExpAccessToken:  accessToken.ExpirationTime,
+		ExpRefreshToken: refreshtoken.ExpirationTime,
 	}, nil
 }

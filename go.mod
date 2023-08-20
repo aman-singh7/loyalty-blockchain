@@ -9,6 +9,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/labstack/echo-jwt/v4 v4.2.0
 	github.com/labstack/echo/v4 v4.11.1
+	github.com/lib/pq v1.10.9
 	github.com/spf13/viper v1.16.0
 	google.golang.org/api v0.138.0
 )
