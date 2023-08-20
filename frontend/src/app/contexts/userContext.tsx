@@ -10,7 +10,7 @@ type userContextType = {
 
 const defaultValue: userContextType = {
   user: {
-    accountType: AccountType.BUSINESS,
+    accountType: AccountType.OWNER,
     name: 'Anand',
     platformUid: 'anosos',
     uid: 'kwkdwd',

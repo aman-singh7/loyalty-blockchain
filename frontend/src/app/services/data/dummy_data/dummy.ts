@@ -2,6 +2,7 @@ import { generateRandomColors } from 'app/services/color_service';
 import { CouponType } from 'app/types/enums/contractEnums';
 import Coupons from 'app/types/interfaces/coupons';
 import Product from 'app/types/interfaces/product';
+import RedeemRequest from 'app/types/interfaces/request';
 import TrsansactionHistory from 'app/types/interfaces/transaction_history';
 import TrsansactionInsight from 'app/types/interfaces/transaction_insight';
 
@@ -330,5 +331,23 @@ export const transactionHistory: TrsansactionHistory[] = [
     discount: BigInt(20),
     productText: 'Fridge',
     dateTime: Date.now(),
+  },
+];
+
+export const redeemList: RedeemRequest[] = [
+  {
+    businessName: 'amazon',
+    tokens: BigInt(1000),
+    claimed: BigInt(10),
+  },
+  {
+    businessName: 'amazon',
+    tokens: BigInt(1000),
+    claimed: BigInt(10),
+  },
+  {
+    businessName: 'amazon',
+    tokens: BigInt(1000),
+    claimed: BigInt(10),
   },
 ];

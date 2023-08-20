@@ -3,6 +3,7 @@ import AppBar from 'app/components/AppBar';
 import Login from 'features/Login';
 import ConsumerHome from 'features/Client/Home';
 import BusinessHome from 'features/Business/Home';
+import OwnerHome from 'features/Admin/Home';
 
 import './index.scss';
 import { UserContext } from './contexts/userContext';
@@ -13,13 +14,15 @@ function App() {
 
   const getHomePage = (accountType: AccountType) => {
     if (accountType === AccountType.CONSUMER) {
-      console.log('consumer home rendered');
       return <ConsumerHome />;
     }
 
     if (accountType === AccountType.BUSINESS) {
-      console.log('business home rendered');
       return <BusinessHome />;
+    }
+
+    if (accountType === AccountType.OWNER) {
+      return <OwnerHome />;
     }
 
     return <>Test</>;
