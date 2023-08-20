@@ -17,12 +17,12 @@ type DiscountRequest struct {
 }
 
 type PurchaseProductRequest struct {
-	UserID          string        `json:"uid"`
-	ProductID       big.Int       `json:"productID"`
-	ProductCategory big.Int       `json:"productCategory"`
-	Coupon          coupon.Coupon `json:"coupon"`
-	Tokens          big.Int       `json:"tokens"`
-	Price           big.Int       `json:"price"`
+	UserID          string         `json:"uid"`
+	ProductID       big.Int        `json:"productID"`
+	ProductCategory big.Int        `json:"productCategory"`
+	Coupon          *coupon.Coupon `json:"coupon"`
+	Tokens          big.Int        `json:"tokens"`
+	Price           big.Int        `json:"price"`
 }
 
 type PurchaseCouponRequest struct {
