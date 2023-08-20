@@ -1,7 +1,6 @@
 package brand
 
 import (
-	"math/big"
 	"net/http"
 
 	brand "github.com/aman-singh7/loyalty-blockchain/application/core/brand"
@@ -30,9 +29,7 @@ func (c *Controller) CouponPrice(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainCouponPriceRequest(&request, transactionId, brandAddress)
+	serviceRequest := toDomainCouponPriceRequest(&request, brandAddress)
 	price, err := c.BrandService.CouponPrice(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -50,9 +47,7 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainCreateCouponRequest(&request, transactionId, brandAddress)
+	serviceRequest := toDomainCreateCouponRequest(&request, brandAddress)
 	err := c.BrandService.CreateCoupon(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -70,9 +65,7 @@ func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainRedeemTokensRequest(&request, transactionId, brandAddress)
+	serviceRequest := toDomainRedeemTokensRequest(&request, brandAddress)
 	err := c.BrandService.RedeemTokens(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})

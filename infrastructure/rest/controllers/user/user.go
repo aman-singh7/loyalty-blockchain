@@ -1,7 +1,6 @@
 package user
 
 import (
-	"math/big"
 	"net/http"
 
 	user "github.com/aman-singh7/loyalty-blockchain/application/core/user"
@@ -43,9 +42,7 @@ func (c *Controller) Discount(ctx echo.Context) error {
 	ctx.Validate(request)
 	// TODO: user address from jwt
 	userAddress := common.HexToAddress(uAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainDiscountRequest(&request, transactionId, userAddress)
+	serviceRequest := toDomainDiscountRequest(&request, userAddress)
 	discount, err := c.UserService.Discount(&serviceRequest.Coupon)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -63,9 +60,7 @@ func (c *Controller) PurchaseProduct(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	userAddress := common.HexToAddress(uAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainPurchaseProductRequest(&request, transactionId, userAddress)
+	serviceRequest := toDomainPurchaseProductRequest(&request, userAddress)
 	err := c.UserService.PurchaseProduct(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -83,9 +78,7 @@ func (c *Controller) PurchaseCoupon(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	userAddress := common.HexToAddress(uAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainPurchaseCouponRequest(&request, transactionId, userAddress)
+	serviceRequest := toDomainPurchaseCouponRequest(&request, userAddress)
 	err := c.UserService.PurchaseCoupon(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -103,9 +96,7 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 	}
 	// TODO: user address from jwt
 	userAddress := common.HexToAddress(uAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainReferralRewardRequest(&request, transactionId, userAddress)
+	serviceRequest := toDomainReferralRewardRequest(&request, userAddress)
 	err := c.UserService.ReferralReward(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -114,9 +105,7 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 }
 
 func (c *Controller) GetAllCoupons(ctx echo.Context) error {
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	coupons, err := c.UserService.GetAllCoupons(transactionId)
+	coupons, err := c.UserService.GetAllCoupons()
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
@@ -132,9 +121,7 @@ func (c *Controller) GetBrandCoupons(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	brandAddress := common.HexToAddress(request.BrandID)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	coupons, err := c.UserService.GetBrandCoupons(transactionId, brandAddress)
+	coupons, err := c.UserService.GetBrandCoupons(brandAddress)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
