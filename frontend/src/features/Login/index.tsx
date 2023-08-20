@@ -1,34 +1,36 @@
-import React from 'react';
-import { useSignInWithGoogle } from 'react-firebase-hooks/auth';
-import { auth } from 'app/services/auth/firebase';
-import Home from 'features/Client/Home';
+import { UserContext } from 'app/contexts/userContext';
+import React, { useContext } from 'react';
+import './index.scss';
 
 const Login: React.FC = () => {
-  const [signInWithGoogle, user, loading, error] = useSignInWithGoogle(auth);
+  const { user, signIn, isLoading } = useContext(UserContext);
 
-  if (error) {
-    return <div>Error!</div>;
-  }
-
-  if (loading) {
-    return <div>loading...</div>;
+  if (isLoading) {
+    return <div className='loading-page'>Loading...</div>;
   }
 
   if (!user) {
-    console.log('not user');
     return (
-      <button
-        style={{ alignContent: 'center' }}
-        onClick={() => {
-          signInWithGoogle();
-        }}
-      >
-        Sign in
-      </button>
+      <div className='login-page'>
+        <div onClick={signIn} className='button'>
+          Login as Consumer
+        </div>
+        <div onClick={signIn} className='button'>
+          Login as Business
+        </div>
+      </div>
     );
   }
 
-  return <Home />;
+  if (user.walletId.length == 0) {
+    return (
+      <div className='login-page'>
+        <div className='button'>Connect With Metmask</div>
+      </div>
+    );
+  }
+
+  return <>UnAuthorized</>;
 };
 
 export default Login;
