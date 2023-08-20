@@ -1,6 +1,11 @@
 Environment: "dev"
 Port: 8000
-RPCUrl: "http://localhost:8545"
+RPCUrl: "ws://localhost:8545"
 PrivateKey: ""
 Address: ""
 ContractAddress: ""
+Secure:
+  JWTAccessSecure: "accessKey"
+  JWTRefreshSecure: "refreshKey"
+  JWTAccessTimeMinute: "1000"
+  JWTRefreshTimeHour: "2400"
