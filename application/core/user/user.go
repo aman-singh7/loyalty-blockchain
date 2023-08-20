@@ -118,3 +118,15 @@ func (s *Service) GetBrandCoupons(brandAddress common.Address) ([]coupon.Coupon,
 	}
 	return coupons, nil
 }
+
+func (s *Service) GetAddress(token string) (string, error) {
+	uid, err := utils.GetUidFromJWT(token)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	address, err := s.repo.GetAddress(uid)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	return address, nil
+}

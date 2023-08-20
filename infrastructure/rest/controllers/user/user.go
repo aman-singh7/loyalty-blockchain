@@ -13,14 +13,7 @@ type Controller struct {
 	UserService *user.Service
 }
 
-// TODO: remove this
-var uAddress string = "0x4593C14AE1c7E4e0304614fBa80c94C02495df22"
-
-// TODO: replace validator with echo.validator
-// TODO: make a transaction id generator
-
 func (c *Controller) FetchBalance(ctx echo.Context) error {
-	// TODO: extract address from jwt
 	ADDRESS := viper.GetString("Address")
 
 	bal, err := c.UserService.FetchBalance(common.HexToAddress(ADDRESS))
@@ -40,7 +33,10 @@ func (c *Controller) Discount(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	ctx.Validate(request)
-	// TODO: user address from jwt
+	uAddress, err := c.UserService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	userAddress := common.HexToAddress(uAddress)
 	serviceRequest := toDomainDiscountRequest(&request, userAddress)
 	discount, err := c.UserService.Discount(&serviceRequest.Coupon)
@@ -58,11 +54,13 @@ func (c *Controller) PurchaseProduct(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	uAddress, err := c.UserService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	userAddress := common.HexToAddress(uAddress)
 	serviceRequest := toDomainPurchaseProductRequest(&request, userAddress)
-	err := c.UserService.PurchaseProduct(serviceRequest)
-	if err != nil {
+	if err := c.UserService.PurchaseProduct(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
@@ -76,11 +74,13 @@ func (c *Controller) PurchaseCoupon(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	uAddress, err := c.UserService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	userAddress := common.HexToAddress(uAddress)
 	serviceRequest := toDomainPurchaseCouponRequest(&request, userAddress)
-	err := c.UserService.PurchaseCoupon(serviceRequest)
-	if err != nil {
+	if err := c.UserService.PurchaseCoupon(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
@@ -94,11 +94,13 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	uAddress, err := c.UserService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	userAddress := common.HexToAddress(uAddress)
 	serviceRequest := toDomainReferralRewardRequest(&request, userAddress)
-	err := c.UserService.ReferralReward(serviceRequest)
-	if err != nil {
+	if err := c.UserService.ReferralReward(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
@@ -127,4 +129,3 @@ func (c *Controller) GetBrandCoupons(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success", "coupons": coupons})
 }
-	
