@@ -40,9 +40,9 @@ func (c *Controller) Discount(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	ctx.Validate(&request)
+	ctx.Validate(request)
 	// TODO: user address from jwt
-	userAddress := common.HexToAddress(uAddress);
+	userAddress := common.HexToAddress(uAddress)
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainDiscountRequest(&request, transactionId, userAddress)
@@ -62,7 +62,7 @@ func (c *Controller) PurchaseProduct(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: user address from jwt
-	userAddress := common.HexToAddress(uAddress);
+	userAddress := common.HexToAddress(uAddress)
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainPurchaseProductRequest(&request, transactionId, userAddress)
@@ -82,7 +82,7 @@ func (c *Controller) PurchaseCoupon(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: user address from jwt
-	userAddress := common.HexToAddress(uAddress);
+	userAddress := common.HexToAddress(uAddress)
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainPurchaseCouponRequest(&request, transactionId, userAddress)
@@ -102,7 +102,7 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	// TODO: user address from jwt
-	userAddress := common.HexToAddress(uAddress);
+	userAddress := common.HexToAddress(uAddress)
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainReferralRewardRequest(&request, transactionId, userAddress)
