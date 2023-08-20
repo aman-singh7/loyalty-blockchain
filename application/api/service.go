@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/aman-singh7/loyalty-blockchain/domain/coupon"
@@ -14,13 +15,15 @@ import (
 
 type Service struct {
 	api  *Api
-	opts *utils.TransactOpts
+	opts *bind.TransactOpts
 }
 
 func NewService(api *Api, opts *utils.TransactOpts) *Service {
+	PRIVATE_KEY := viper.GetString("PrivateKey")
+	options := opts.GetOpts(PRIVATE_KEY)
 	return &Service{
-		api:  api,
-		opts: opts,
+		api: api,
+		opts: options,
 	}
 }
 
@@ -42,7 +45,7 @@ func (s *Service) FetchAccountBalance(transactionId int, address common.Address,
 }
 
 func (s *Service) PurchaseProductWithCoupon(transactionId int, coupon coupon.Coupon, address common.Address) error {
-	_, err := s.api.ApiTransactor.ConsumerCouponPayment(&bind.TransactOpts{}, utils.BigInt(transactionId), utils.BigInt(coupon.HoldingID), address)
+	_, err := s.api.ApiTransactor.ConsumerCouponPayment(s.opts, utils.BigInt(transactionId), utils.BigInt(coupon.HoldingID), address)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -50,7 +53,7 @@ func (s *Service) PurchaseProductWithCoupon(transactionId int, coupon coupon.Cou
 }
 
 func (s *Service) PurchaseProductWithToken(transactionId int, tokens int) error {
-	_, err := s.api.ApiTransactor.ConsumerTokenPayment(&bind.TransactOpts{}, utils.BigInt(transactionId), utils.BigInt(tokens))
+	_, err := s.api.ApiTransactor.ConsumerTokenPayment(s.opts, utils.BigInt(transactionId), utils.BigInt(tokens))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -58,7 +61,7 @@ func (s *Service) PurchaseProductWithToken(transactionId int, tokens int) error 
 }
 
 func (s *Service) PurchaseCoupon(transactionId int, coupon coupon.Coupon, count int, address common.Address) error {
-	_, err := s.api.ApiTransactor.PurchaseCoupon(&bind.TransactOpts{}, utils.BigInt(transactionId), address, utils.BigInt(coupon.CouponID), utils.BigInt(count))
+	_, err := s.api.ApiTransactor.PurchaseCoupon(s.opts, utils.BigInt(transactionId), address, utils.BigInt(coupon.CouponID), utils.BigInt(count))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -66,7 +69,8 @@ func (s *Service) PurchaseCoupon(transactionId int, coupon coupon.Coupon, count 
 }
 
 func (s *Service) RewardToken(transactionId int, amount int) error {
-	_, err := s.api.ApiTransactor.MintTokens(&bind.TransactOpts{}, utils.BigInt(transactionId), utils.BigInt(amount))
+	fmt.Println("Rewarding Tokens")
+	_, err := s.api.ApiTransactor.MintTokens(s.opts, utils.BigInt(transactionId), utils.BigInt(amount))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -74,7 +78,7 @@ func (s *Service) RewardToken(transactionId int, amount int) error {
 }
 
 func (s *Service) CreateCoupon(transactionId int, coupon coupon.Coupon, cost int) error {
-	_, err := s.api.ApiTransactor.CreateCoupons(&bind.TransactOpts{}, utils.BigInt(transactionId), coupon.IssuerBusiness, utils.BigInt(coupon.Count), utils.BigInt(coupon.SuperCoins), utils.BigInt(coupon.Discount), utils.BigInt(coupon.ProductCategory), utils.BigInt(coupon.ThresholdValue), utils.BigInt((coupon.ProductId)), uint8(coupon.Type), utils.BigInt(coupon.ExpiryDate), utils.BigInt(cost))
+	_, err := s.api.ApiTransactor.CreateCoupons(s.opts, utils.BigInt(transactionId), coupon.IssuerBusiness, utils.BigInt(coupon.Count), utils.BigInt(coupon.SuperCoins), utils.BigInt(coupon.Discount), utils.BigInt(coupon.ProductCategory), utils.BigInt(coupon.ThresholdValue), utils.BigInt((coupon.ProductId)), uint8(coupon.Type), utils.BigInt(coupon.ExpiryDate), utils.BigInt(cost))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -82,7 +86,7 @@ func (s *Service) CreateCoupon(transactionId int, coupon coupon.Coupon, cost int
 }
 
 func (s *Service) RedeemTokens(transactionId int, amount int) error {
-	_, err := s.api.ApiTransactor.RedeemTokens(&bind.TransactOpts{}, utils.BigInt(amount))
+	_, err := s.api.ApiTransactor.RedeemTokens(s.opts, utils.BigInt(amount))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
@@ -91,9 +95,7 @@ func (s *Service) RedeemTokens(transactionId int, amount int) error {
 
 func (s *Service) RegisterMember(memberAddr common.Address, accountType uint8) error {
 	// 1 -> Customer 2 -> Brand
-	PRIVATE_KEY := viper.GetString("PrivateKey")
-	opts := s.opts.GetOpts(PRIVATE_KEY)
-	_, err := s.api.RegisterMember(opts, utils.BigInt(2), memberAddr, accountType)
+	_, err := s.api.RegisterMember(s.opts, utils.BigInt(2), memberAddr, accountType)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, echo.Map{
 			"message": "register member failed",
