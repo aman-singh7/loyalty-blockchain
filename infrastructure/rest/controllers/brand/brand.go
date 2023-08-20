@@ -8,9 +8,6 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// TODO: remove this
-var bAddress string = ""
-
 type Controller struct {
 	BrandService *brand.Service
 }
@@ -27,7 +24,10 @@ func (c *Controller) CouponPrice(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	brandAddress := common.HexToAddress(bAddress)
 	serviceRequest := toDomainCouponPriceRequest(&request, brandAddress)
 	price, err := c.BrandService.CouponPrice(serviceRequest)
@@ -45,11 +45,13 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	brandAddress := common.HexToAddress(bAddress)
 	serviceRequest := toDomainCreateCouponRequest(&request, brandAddress)
-	err := c.BrandService.CreateCoupon(serviceRequest)
-	if err != nil {
+	if err := c.BrandService.CreateCoupon(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
@@ -63,11 +65,13 @@ func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	brandAddress := common.HexToAddress(bAddress)
 	serviceRequest := toDomainRedeemTokensRequest(&request, brandAddress)
-	err := c.BrandService.RedeemTokens(serviceRequest)
-	if err != nil {
+	if err := c.BrandService.RedeemTokens(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})

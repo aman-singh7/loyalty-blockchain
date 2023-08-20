@@ -13,7 +13,7 @@ func ApplicationV1Router(e *echo.Echo, api *api.Service, db *sql.DB) {
 	{
 		AuthRoutes(routerV1, adapter.AuthAdapter(api, db))
 		UserRoutes(routerV1, adapter.UserAdapter(api, db))
-		BrandRoutes(routerV1, adapter.BrandAdapter(api))
+		BrandRoutes(routerV1, adapter.BrandAdapter(api, db))
 		AdminRoutes(routerV1, adapter.AdminAdapter(api))
 	}
 }

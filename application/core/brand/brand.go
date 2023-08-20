@@ -7,6 +7,7 @@ import (
 	"github.com/aman-singh7/loyalty-blockchain/application/price"
 	"github.com/aman-singh7/loyalty-blockchain/domain/brand"
 	brandRepo "github.com/aman-singh7/loyalty-blockchain/infrastructure/repository/brand"
+	"github.com/aman-singh7/loyalty-blockchain/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -44,4 +45,16 @@ func (s* Service) RedeemTokens(request *brand.RedeemTokensRequest) error {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
 	return nil
+}
+
+func (s *Service) GetAddress(token string) (string, error) {
+	uid, err := utils.GetUidFromJWT(token)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	address, err := s.repo.GetAddress(uid)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	return address, nil
 }

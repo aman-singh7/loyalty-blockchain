@@ -88,7 +88,7 @@ func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
 }
 
 func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
-	// TODO: validate user
+	// TODO: send request using userAddress
 	if err := s.api.PurchaseCoupon(request.Coupon, request.Count, request.Coupon.IssuerBusiness); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
