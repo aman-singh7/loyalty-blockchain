@@ -1,17 +1,22 @@
 package utils
 
+import (
+	"math/rand"
+	"math/big"
+)
+
 type Service struct {
-	transactionId int
+	count int64
 }
 
 func NewService() *Service {
 	return &Service{
-		transactionId: 0,
+		count: 0,
 	}
 }
 
-func (s *Service) GetTransactionId() int {
+func (s *Service) GetTransactionId(key interface{}, salt int64) *big.Int {
 	// TODO: store transaction id in db
-	s.transactionId++
-	return s.transactionId
+	s.count++;
+	return big.NewInt(rand.Int63() + s.count)
 }
