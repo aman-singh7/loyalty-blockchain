@@ -35,3 +35,12 @@ type ReferralRewardRequest struct {
 	UserID string  `json:"uid"`
 	Tokens big.Int `json:"tokens"`
 }
+
+type GetAllCouponsRequest struct {
+	UserID string `json:"uid"`
+}
+
+type GetBrandCouponsRequest struct {
+	UserID string `json:"uid"`
+	BrandID string `json:"brandID"`
+}

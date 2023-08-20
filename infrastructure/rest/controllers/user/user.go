@@ -112,3 +112,32 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
 }
+
+func (c *Controller) GetAllCoupons(ctx echo.Context) error {
+	// TODO: generate transaction id
+	transactionId := *big.NewInt(2)
+	coupons, err := c.UserService.GetAllCoupons(transactionId)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success", "coupons": coupons})
+}
+
+func (c *Controller) GetBrandCoupons(ctx echo.Context) error {
+	var request GetBrandCouponsRequest
+	if err := ctx.Bind(&request); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	if err := ctx.Validate(request); err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	brandAddress := common.HexToAddress(request.BrandID)
+	// TODO: generate transaction id
+	transactionId := *big.NewInt(2)
+	coupons, err := c.UserService.GetBrandCoupons(transactionId, brandAddress)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success", "coupons": coupons})
+}
+	
