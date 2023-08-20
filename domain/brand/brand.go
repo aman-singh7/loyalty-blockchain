@@ -7,7 +7,14 @@ import (
 	"github.com/ethereum/go-ethereum/common"
 )
 
-type Brand struct{}
+type Brand struct {
+	UID           string `json:"uid"`
+	PlatformUID   string `json:"platformUid"`
+	Name          string `json:"name"`
+	Email         string `json:"email"`
+	WalletAddress string `json:"walletAddress"`
+	AccountType   uint8  `json:"accountType"`
+}
 
 type CouponPriceRequest struct {
 	BrandAddress  common.Address `json:"brandAddress"`
