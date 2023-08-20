@@ -15,7 +15,7 @@ type Controller struct {
 }
 
 // TODO: remove this
-var uAddress string = "0xB88Af08d3A3ECa34592D145A90Fde68f6109f2C6"
+var uAddress string = "0x4593C14AE1c7E4e0304614fBa80c94C02495df22"
 
 // TODO: replace validator with echo.validator
 // TODO: make a transaction id generator

@@ -46,31 +46,36 @@ func (s *Service) Discount(userCoupon *coupon.Coupon) (big.Int, error) {
 
 // TODO: differentiate between purchase with Coupon/Token + Cash
 func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
-	// TODO: validate user
-	_, err := s.Discount(&request.Coupon)
-	if err != nil {
-		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon has expired"})
-	}
-	if request.Coupon.Type == coupon.UNIQUE {
-		if &request.Coupon.ProductId != &request.ProductID {
-			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
-		}
-	} else {
-		if request.Coupon.ProductCategory.Cmp(&request.ProductCategory) == 0  {
-			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
-		} else if request.Coupon.ThresholdValue.Cmp(&request.Price) == -1 {
-			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
-		}
-	}
-	if request.Coupon.CouponID.String() != "" && request.Tokens.Cmp(big.NewInt(0)) != 0 {
+	if request.Coupon != nil && request.Tokens.Cmp(big.NewInt(0)) != 0 {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon and tokens cannot be in same transaction"})
+	}
+
+	// TODO: validate user
+	if request.Coupon != nil {
+		_, err := s.Discount(request.Coupon)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon has expired"})
+		}
+		if request.Coupon.Type == coupon.UNIQUE {
+			if &request.Coupon.ProductId != &request.ProductID {
+				return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
+			}
+		} else {
+			if request.Coupon.ProductCategory.Cmp(&request.ProductCategory) == 0 {
+				return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
+			} else if request.Coupon.ThresholdValue.Cmp(&request.Price) == -1 {
+				return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon is not allowed on this product"})
+			}
+		}
+
+		if request.Coupon.CouponID.String() != "" {
+			if err := s.api.PurchaseProductWithCoupon(request.TransactionID, *request.Coupon, request.Coupon.IssuerBusiness); err != nil {
+				return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
+			}
+		}
 	}
 	if request.Tokens.Cmp(big.NewInt(0)) != 0 {
 		if err := s.api.PurchaseProductWithToken(request.TransactionID, request.Tokens); err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
-		}
-	} else if request.Coupon.CouponID.String() != "" {
-		if err := s.api.PurchaseProductWithCoupon(request.TransactionID, request.Coupon, request.Coupon.IssuerBusiness); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 		}
 	}
@@ -91,8 +96,8 @@ func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
 }
 
 func (s *Service) ReferralReward(request *user.ReferralRewardRequest) error {
-	// TODO: validate user1 and user2 
-	if err := s.api.RewardToken(request.TransactionID, request.UserAddress,request.Tokens); err != nil {
+	// TODO: validate user1 and user2
+	if err := s.api.RewardToken(request.TransactionID, request.UserAddress, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
 	}
 	return nil
