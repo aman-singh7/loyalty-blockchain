@@ -1,11 +1,13 @@
 package brand
 
 import (
+	"math/big"
+
 	domain "github.com/aman-singh7/loyalty-blockchain/domain/brand"
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func toDomainCouponPriceRequest(request *CouponPriceRequest, transactionId int, brandAddress common.Address) *domain.CouponPriceRequest {
+func toDomainCouponPriceRequest(request *CouponPriceRequest, transactionId big.Int, brandAddress common.Address) *domain.CouponPriceRequest {
 	return &domain.CouponPriceRequest{
 		BrandAddress:  brandAddress,
 		Coupon:        request.Coupon,
@@ -15,7 +17,7 @@ func toDomainCouponPriceRequest(request *CouponPriceRequest, transactionId int, 
 	}
 }
 
-func toDomainCreateCouponRequest(request *CreateCouponRequest, transactionId int, brandAddress common.Address) *domain.CreateCouponRequest {
+func toDomainCreateCouponRequest(request *CreateCouponRequest, transactionId big.Int, brandAddress common.Address) *domain.CreateCouponRequest {
 	return &domain.CreateCouponRequest{
 		BrandAddress:  brandAddress,
 		Coupon:        request.Coupon,
@@ -26,7 +28,7 @@ func toDomainCreateCouponRequest(request *CreateCouponRequest, transactionId int
 	}
 }
 
-func toDomainRedeemTokensRequest(request *RedeemTokensRequest, transactionId int, brandAddress common.Address) *domain.RedeemTokensRequest {
+func toDomainRedeemTokensRequest(request *RedeemTokensRequest, transactionId big.Int, brandAddress common.Address) *domain.RedeemTokensRequest {
 	return &domain.RedeemTokensRequest{
 		BrandAddress:  brandAddress,
 		Tokens:        request.Tokens,

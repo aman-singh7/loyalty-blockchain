@@ -22,7 +22,7 @@ func NewService(repo *brandRepo.Repository, api *api.Service) *Service {
 	}
 }
 
-func (s* Service) CouponPrice(request brand.CouponPriceRequest) (int, error) {
+func (s* Service) CouponPrice(request *brand.CouponPriceRequest) (int, error) {
 	price, err := price.PredictCouponPrice(/* TODO: all the params */)
 	if err != nil {
 		return 0, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -30,7 +30,7 @@ func (s* Service) CouponPrice(request brand.CouponPriceRequest) (int, error) {
 	return price, nil
 }
 
-func (s* Service) CreateCoupon(request brand.CreateCouponRequest) error {
+func (s* Service) CreateCoupon(request *brand.CreateCouponRequest) error {
 	// TODO: validate brand
 	if err := s.api.CreateCoupon(request.TransactionID, request.Coupon, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
@@ -38,9 +38,9 @@ func (s* Service) CreateCoupon(request brand.CreateCouponRequest) error {
 	return nil
 }
 
-func (s* Service) RedeemTokens(request brand.RedeemTokensRequest) error {
+func (s* Service) RedeemTokens(request *brand.RedeemTokensRequest) error {
 	// TODO: validate brand
-	if err := s.api.RedeemTokens(request.TransactionID, request.Tokens); err != nil {
+	if err := s.api.RedeemTokens(request.TransactionID, request.BrandAddress, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
 	return nil
