@@ -5,17 +5,17 @@ import (
 	"math/big"
 )
 
-type Service struct {
+type TransactionGen struct {
 	count int64
 }
 
-func NewService() *Service {
-	return &Service{
+func NewTransactionGen() *TransactionGen {
+	return &TransactionGen{
 		count: 0,
 	}
 }
 
-func (s *Service) GetTransactionId(key interface{}, salt int64) *big.Int {
+func (s *TransactionGen) GetTransactionId() *big.Int {
 	// TODO: store transaction id in db
 	s.count++;
 	return big.NewInt(rand.Int63() + s.count)

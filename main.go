@@ -57,7 +57,8 @@ func main() {
 	}
 
 	opts := utils.NewTransactOpts(client)
-	srvc := api.NewService(conn, opts)
+	tx := utils.NewTransactionGen()
+	srvc := api.NewService(conn, opts, tx)
 
 	// Database
 	db := config.NewDatabase()
