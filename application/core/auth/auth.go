@@ -39,7 +39,7 @@ func NewService(repo *userRepo.Repository) *Service {
 	}
 }
 
-func (s *Service) UserLogin(request *domain.CreateUserRequest) (*Auth, error) {
+func (s *Service) CreateUser(request *domain.CreateUserRequest) (*Auth, error) {
 	ctx := context.Background()
 	client, err := s.app.Auth(ctx)
 	if err != nil {
@@ -72,7 +72,7 @@ func (s *Service) UserLogin(request *domain.CreateUserRequest) (*Auth, error) {
 	}, nil
 }
 
-func (s *Service) GenerateAccessTokenFromRefreshToken(request domain.GenerateTokenRequest) (*Auth, error) {
+func (s *Service) GenerateAccessTokenFromRefreshToken(request *domain.GenerateTokenRequest) (*Auth, error) {
 	claims, err := jwt.GetClaimsAndVerifyToken(request.Token, "refresh")
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
