@@ -9,5 +9,5 @@ type GetALLCouponsRequest struct {
 
 type GetBrandCouponRequest struct {
 	// add filter of cost etc
-	BrandID int `json:"uid"`
+	BrandID string `json:"uid"`
 }

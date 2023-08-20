@@ -7,7 +7,7 @@ import (
 type User struct{}
 
 type DiscountRequest struct {
-	UserID          int           `json:"uid"`
+	UserID          string        `json:"uid"`
 	ProductID       int           `json:"productID"`
 	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
@@ -15,7 +15,7 @@ type DiscountRequest struct {
 }
 
 type PurchaseProductRequest struct {
-	UserID          int           `json:"uid"`
+	UserID          string        `json:"uid"`
 	ProductID       int           `json:"productID"`
 	ProductCategory int           `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
@@ -24,12 +24,12 @@ type PurchaseProductRequest struct {
 }
 
 type PurchaseCouponRequest struct {
-	UserID int           `json:"uid"`
+	UserID string        `json:"uid"`
 	Tokens int           `json:"tokens"`
 	Coupon coupon.Coupon `json:"coupon"`
 }
 
 type ReferralRewardRequest struct {
-	UserID int `json:"uid"`
-	Tokens int `json:"tokens"`
+	UserID string `json:"uid"`
+	Tokens int    `json:"tokens"`
 }
