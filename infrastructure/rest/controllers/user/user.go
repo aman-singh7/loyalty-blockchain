@@ -15,7 +15,7 @@ type Controller struct {
 }
 
 // TODO: remove this
-var uAddress string = ""
+var uAddress string = "0xB88Af08d3A3ECa34592D145A90Fde68f6109f2C6"
 
 // TODO: replace validator with echo.validator
 // TODO: make a transaction id generator
@@ -29,7 +29,7 @@ func (c *Controller) FetchBalance(ctx echo.Context) error {
 		return err
 	}
 
-	return ctx.JSON(http.StatusOK, echo.Map{"balance": bal})
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success", "balance": bal})
 }
 
 func (c *Controller) Discount(ctx echo.Context) error {
@@ -46,8 +46,11 @@ func (c *Controller) Discount(ctx echo.Context) error {
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainDiscountRequest(&request, transactionId, userAddress)
-	c.UserService.Discount(&serviceRequest.Coupon)
-	return nil
+	discount, err := c.UserService.Discount(&serviceRequest.Coupon)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success", "discount": discount})
 }
 
 func (c *Controller) PurchaseProduct(ctx echo.Context) error {
@@ -63,8 +66,11 @@ func (c *Controller) PurchaseProduct(ctx echo.Context) error {
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainPurchaseProductRequest(&request, transactionId, userAddress)
-	c.UserService.PurchaseProduct(serviceRequest)
-	return nil
+	err := c.UserService.PurchaseProduct(serviceRequest)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
 }
 
 func (c *Controller) PurchaseCoupon(ctx echo.Context) error {
@@ -80,8 +86,11 @@ func (c *Controller) PurchaseCoupon(ctx echo.Context) error {
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainPurchaseCouponRequest(&request, transactionId, userAddress)
-	c.UserService.PurchaseCoupon(serviceRequest)
-	return nil
+	err := c.UserService.PurchaseCoupon(serviceRequest)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
 }
 
 func (c *Controller) ReferralReward(ctx echo.Context) error {
@@ -97,6 +106,9 @@ func (c *Controller) ReferralReward(ctx echo.Context) error {
 	// TODO: generate transaction id
 	transactionId := *big.NewInt(2)
 	serviceRequest := toDomainReferralRewardRequest(&request, transactionId, userAddress)
-	c.UserService.ReferralReward(serviceRequest)
-	return nil
+	err := c.UserService.ReferralReward(serviceRequest)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
 }
