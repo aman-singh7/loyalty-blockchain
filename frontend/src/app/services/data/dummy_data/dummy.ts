@@ -1,6 +1,7 @@
 import { generateRandomColors } from 'app/services/color_service';
 import { CouponType } from 'app/types/enums/contractEnums';
 import Coupons from 'app/types/interfaces/coupons';
+import Product from 'app/types/interfaces/product';
 import TrsansactionHistory from 'app/types/interfaces/transaction_history';
 import TrsansactionInsight from 'app/types/interfaces/transaction_insight';
 
@@ -156,6 +157,145 @@ export const couponList: Map<string, Coupons[]> = new Map([
     ],
   ],
 ]);
+
+export const brandCouponList: Coupons[] = [
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(0),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(0),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(0),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(0),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(100),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(100),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+  {
+    couponId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    superCoins: BigInt(100),
+    count: BigInt(0),
+    discount: BigInt(0),
+    productCategory: BigInt(0),
+    thresholdValue: BigInt(0),
+    productId: BigInt(0),
+    couponType: CouponType.UNIQUE,
+    expiryTime: BigInt(0),
+    productText: 'ABCD fridges',
+    active: true,
+  },
+];
+
+export const productList: Product[] = [
+  {
+    productId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    cost: BigInt(0),
+    productCategory: BigInt(0),
+    productText: 'fridges',
+  },
+  {
+    productId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    cost: BigInt(0),
+    productCategory: BigInt(0),
+    productText: 'fridges',
+  },
+  {
+    productId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    cost: BigInt(0),
+    productCategory: BigInt(0),
+    productText: 'fridges',
+  },
+  {
+    productId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    cost: BigInt(0),
+    productCategory: BigInt(0),
+    productText: 'fridges',
+  },
+  {
+    productId: BigInt(0),
+    issuerBusiness: 'bussiness',
+    cost: BigInt(0),
+    productCategory: BigInt(0),
+    productText: 'fridges',
+  },
+];
 
 export const superCoinCount = BigInt(496);
 

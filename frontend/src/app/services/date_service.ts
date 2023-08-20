@@ -1,4 +1,4 @@
-const months = [
+export const monthsList = [
   'January',
   'February',
   'March',
@@ -16,7 +16,7 @@ const months = [
 export const formatDate = (datetime: number): string => {
   const dateObj: Date = new Date(datetime);
   const date: number = dateObj.getDate();
-  const month: string = months[dateObj.getMonth()];
+  const month: string = monthsList[dateObj.getMonth()];
   const year: number = dateObj.getFullYear();
   let hour: number = dateObj.getHours();
   const minutes: number = dateObj.getMinutes();
