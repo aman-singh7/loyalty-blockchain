@@ -16,7 +16,7 @@ func (c *Controller) CreateUser(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := ctx.Validate(&request); err != nil {
+	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	serviceRequest := toDomainCreateUserRequest(&request)
@@ -32,7 +32,7 @@ func (c *Controller) GenerateToken(ctx echo.Context) error {
 	if err := ctx.Bind(&request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	if err := ctx.Validate(&request); err != nil {
+	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	serviceRequest := toDomainGenerateTokenRequest(&request)
