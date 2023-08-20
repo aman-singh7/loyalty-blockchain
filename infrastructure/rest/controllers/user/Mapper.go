@@ -1,11 +1,13 @@
 package user
 
 import (
+	"math/big"
+
 	domain "github.com/aman-singh7/loyalty-blockchain/domain/user"
 	"github.com/ethereum/go-ethereum/common"
 )
 
-func toDomainDiscountRequest(request *DiscountRequest, transactionId int, userAddress common.Address) *domain.DiscountRequest {
+func toDomainDiscountRequest(request *DiscountRequest, transactionId big.Int, userAddress common.Address) *domain.DiscountRequest {
 	return &domain.DiscountRequest{
 		UserAddress:     userAddress,
 		ProductID:       request.ProductID,
@@ -16,7 +18,7 @@ func toDomainDiscountRequest(request *DiscountRequest, transactionId int, userAd
 	}
 }
 
-func toDomainPurchaseProductRequest(request *PurchaseProductRequest, transactionId int, userAddress common.Address) *domain.PurchaseProductRequest {
+func toDomainPurchaseProductRequest(request *PurchaseProductRequest, transactionId big.Int, userAddress common.Address) *domain.PurchaseProductRequest {
 	return &domain.PurchaseProductRequest{
 		UserAddress:     userAddress,
 		ProductID:       request.ProductID,
@@ -28,7 +30,7 @@ func toDomainPurchaseProductRequest(request *PurchaseProductRequest, transaction
 	}
 }
 
-func toDomainPurchaseCouponRequest(request *PurchaseCouponRequest, transactionId int, userAddress common.Address) *domain.PurchaseCouponRequest {
+func toDomainPurchaseCouponRequest(request *PurchaseCouponRequest, transactionId big.Int, userAddress common.Address) *domain.PurchaseCouponRequest {
 	return &domain.PurchaseCouponRequest{
 		UserAddress:   userAddress,
 		Tokens:        request.Tokens,
@@ -37,7 +39,7 @@ func toDomainPurchaseCouponRequest(request *PurchaseCouponRequest, transactionId
 	}
 }
 
-func toDomainReferralRewardRequest(request *ReferralRewardRequest, transactionId int, userAddress common.Address) *domain.ReferralRewardRequest {
+func toDomainReferralRewardRequest(request *ReferralRewardRequest, transactionId big.Int, userAddress common.Address) *domain.ReferralRewardRequest {
 	return &domain.ReferralRewardRequest{
 		UserAddress:   userAddress,
 		Tokens:        request.Tokens,
