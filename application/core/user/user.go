@@ -102,3 +102,19 @@ func (s *Service) ReferralReward(request *user.ReferralRewardRequest) error {
 	}
 	return nil
 }
+
+func (s* Service) GetAllCoupons(transactionId big.Int) ([]coupon.Coupon, error) {
+	coupons, err := s.api.GetAllCoupons(transactionId)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch coupons"})
+	}
+	return coupons, nil
+}
+
+func (s* Service) GetBrandCoupons(transactionId big.Int, brandAddress common.Address) ([]coupon.Coupon, error) {
+	coupons, err := s.api.GetBrandCoupons(transactionId, brandAddress)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch coupons"})
+	}
+	return coupons, nil
+}

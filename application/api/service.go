@@ -117,3 +117,41 @@ func (s *Service) RegisterMember(memberAddr common.Address, accountType uint8) e
 	}
 	return nil
 }
+
+func (s* Service) GetAllCoupons(transactionId big.Int) ([]coupon.Coupon, error) {
+	opts := &bind.CallOpts{
+		Pending: false,
+		From:    common.HexToAddress(viper.GetString("Address")),
+		Context: context.Background(),
+	}
+	coupons, err := s.api.ApiCaller.GetAllCoupons(opts, &transactionId)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, echo.Map{
+			"message": "fetch coupons failed",
+		})
+	}
+	results := make([]coupon.Coupon, len(coupons))
+	for i := 0; i < len(coupons); i++ {
+		results[i] = *fromContractCoupontoCoupon(coupons[i])
+	}
+	return results, nil
+}
+
+func (s* Service) GetBrandCoupons(transactionId big.Int, brandAddress common.Address) ([]coupon.Coupon, error) {
+	opts := &bind.CallOpts{
+		Pending: false,
+		From:    common.HexToAddress(viper.GetString("Address")),
+		Context: context.Background(),
+	}
+	coupons, err := s.api.ApiCaller.GetBrandCoupons(opts, &transactionId, brandAddress)
+	if err != nil {
+		return nil, echo.NewHTTPError(http.StatusInternalServerError, echo.Map{
+			"message": "fetch coupons failed",
+		})
+	}
+	results := make([]coupon.Coupon, len(coupons))
+	for i := 0; i < len(coupons); i++ {
+		results[i] = *fromContractCoupontoCoupon(coupons[i])
+	}
+	return results, nil
+}

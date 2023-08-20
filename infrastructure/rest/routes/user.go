@@ -18,5 +18,7 @@ func UserRoutes(g *echo.Group, controller *userController.Controller) {
 		routerUser.POST("/purchase", controller.PurchaseProduct)
 		routerUser.POST("/coupon", controller.PurchaseCoupon)
 		routerUser.POST("/referral", controller.ReferralReward)
+		routerUser.GET("/coupons/all", controller.GetAllCoupons)
+		routerUser.GET("/coupons", controller.GetBrandCoupons)
 	}
 }
