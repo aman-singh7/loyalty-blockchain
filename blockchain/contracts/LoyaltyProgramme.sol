@@ -653,12 +653,12 @@ contract LoyaltyProgramme {
         return accounts[person].superCoins;
     }
 
-    
     function getAllCoupons(
         uint transactionId
     )
         public
         view
+        checkRegistered(transactionId, msg.sender)
         returns (Coupon[] memory)
     {
         Coupon[] memory results;
@@ -678,12 +678,15 @@ contract LoyaltyProgramme {
         public
         view
         checkAccountType(transactionId, brandAddress, AccountType.BUSINESS)
-    returns (Coupon[] memory)
+        returns (Coupon[] memory)
     {
         Coupon[] memory results;
         uint j = 0;
         for (uint i = 0; i < couponList.length; i++) {
-            if (couponList[i].active && couponList[i].issuerBusiness == brandAddress) {
+            if (
+                couponList[i].active &&
+                couponList[i].issuerBusiness == brandAddress
+            ) {
                 results[j++] = couponList[i];
             }
         }
