@@ -30,7 +30,7 @@ type Service struct {
 
 func NewService(repo *userRepo.Repository) *Service {
 	ctx := context.Background()
-	opt := option.WithCredentialsFile("path/to/serviceAccountKey.json")
+	opt := option.WithCredentialsFile("./serviceAccountKey.json")
 	app, err := firebase.NewApp(ctx, nil, opt)
 	if err != nil {
 		log.Fatalf("error initializing firebase app: %v\n", err)

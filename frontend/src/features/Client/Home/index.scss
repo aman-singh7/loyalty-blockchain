@@ -1,0 +1,129 @@
+.client-home{
+    margin: 1% 20%;
+    background-color: white;
+
+    padding: 2%;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: flex-start;
+
+    &-header{
+        font-weight: 500;
+        margin: 1% 0;
+        font-size: 1.5rem;
+    }
+
+    &-token{
+    
+        &-container{
+            margin: 3% 0 1.5% 0;
+            padding: 2% 4%;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-flow: row nowrap;
+            background-color: #F3F3F3;
+            text-align: center;
+
+            &-supercoin{
+                color: #2468D8;
+                font-weight: bold;
+
+                &-image{
+                    margin: 0 0.2rem 0 0.6rem;
+                }
+            }
+        }
+
+        &-activity{
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+            margin: 1.5% 0;
+            padding: 2%;
+            background-color: #F3F3F3;
+            outline: none;
+            border: none;
+            font-family: inherit;
+            font-size: inherit;
+            border-radius: 1rem;
+        }
+    }
+
+    &-offers-headers{
+        margin: 2% 0;
+        font-weight: 500;
+    }
+
+    &-offers-container{
+        width: 100%;
+    }
+
+    &-business-offer{
+        &-container{
+            display: flex;
+            flex-flow: row nowrap;
+            margin: 2% 0;
+            box-shadow: 0 0 5px 2px #00000009;
+            padding: 3%;
+            border-radius: 1rem;
+        }
+
+        &-information{
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            align-items:flex-start;
+
+            &-announcement{
+                margin-top: auto;
+            }
+            &-view-all{
+                margin-top: auto;
+                background-color: #2874F0;
+                outline: none;
+                border: 0;
+                padding: 0.5rem;
+                font-weight: 600;
+                border-radius: 0.3rem;
+                color: white;
+            }
+        }
+
+        &-entity{
+            &-container {
+                display: flex;
+                flex-flow: row nowrap;
+                overflow: auto;
+                &::-webkit-scrollbar{
+                    display: none;
+                }
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+            margin: 0 2%;
+            flex: 0 0 21%; // 25% - 2 * 2% (margin)
+            &-image{
+                height: 10rem;
+                position: relative;
+                background-color: #FFF3C8;
+                border-radius: 1rem;
+                margin-bottom: 10%;
+            }
+
+            &-cost{
+                &-container{
+                    position: absolute;
+                    right: 1rem;
+                    bottom: 1rem;
+                    display: flex;
+                    flex-flow: row nowrap;
+                }
+
+                &-icon{
+                    margin: 0 0.5rem;
+                }
+                color: #2468D8;
+            }
+        }
+    }
+}

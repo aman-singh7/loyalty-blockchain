@@ -1,0 +1,104 @@
+.owner-home{
+    margin: 1% 20%;
+    background-color: white;
+
+    padding: 2%;
+    display: flex;
+    flex-flow: column nowrap;
+
+    &-token {
+        &-container {
+            margin: 3% 0 1.5% 0;
+            display: flex;
+            flex-flow: row nowrap;
+            text-align: center;
+            
+            &-active, &-account{
+                display: flex;
+                flex-flow: row nowrap;
+                background-color: #F3F3F3;
+                border-radius: 1.5rem;
+                padding: 1rem 1rem;
+                margin-bottom: 2rem;
+            }
+
+            &-active {
+                margin-right: 1rem;
+            }
+
+            &-supercoin {
+                color: #2468D8;
+                font-weight: bold;
+
+                &-image {
+                    margin: 0 0.2rem 0 0.6rem;
+                }
+            }
+        }
+    }
+
+    &-create-token{
+        &-container{
+            background-color:#F3F3F3;
+            padding: 1.5rem;
+            border-radius: 1rem;
+        }
+
+        &-header{
+            font-size: 1.2rem;
+            font-weight: 400;
+            padding-bottom: 1rem;
+        }
+
+        &-form{
+            display: flex;
+            flex-flow: row nowrap;
+            align-items: center;
+
+            &-promt{
+                margin-right: 1rem;
+            }
+
+            &-button {
+                margin-left: auto;
+                outline: none;
+                border: none;
+                background-color: #2874F0;
+                padding: 0.5rem;
+                color: white;
+                border-radius: 0.5rem;
+            }
+        }
+    }
+
+    &-approval{
+        &-header{
+            margin: 2rem 0 0 2rem;
+            font-size: 1.4rem;
+        }
+        &-container{
+            margin: 2rem;
+            display: grid;
+            grid-template-columns: auto auto auto auto;
+            column-gap: 0.5rem;
+            row-gap: 1rem;
+        }
+
+        &-columns{
+            &-claimed{
+                grid-column: 3 / span 2;
+            }
+
+            &-entry-approve-button{
+                background-color: #2874F0;
+                outline: none;
+                border: none;
+                padding: 0.5rem;
+                color: white;
+                border-radius: 0.5rem;
+            }
+        }
+    }
+
+    
+}

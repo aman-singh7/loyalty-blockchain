@@ -1,0 +1,144 @@
+.client-history{
+
+    margin: 1% 20%;
+    padding: 5%;
+    background-color: white;
+
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: center;
+
+    &-header{
+        display: flex;
+        flex-flow: row nowrap;
+        align-items: center;
+        align-self: flex-start;
+
+        &-text{
+            font-size: 1.5rem;
+            font-weight: 400;
+        }
+
+        &-icon{
+            margin-right: 1rem;
+        }
+    }
+
+    &-token {
+        &-container {
+            margin: 3rem 0 1rem 0;
+            padding: 2% 4%;
+            border-radius: 1.5rem;
+            display: flex;
+            flex-flow: row nowrap;
+            background-color: #F3F3F3;
+            text-align: center;
+
+            &-supercoin {
+                color: #2468D8;
+                font-weight: bold;
+
+                &-image {
+                    margin: 0 0.2rem 0 0.6rem;
+                }
+            }
+        }
+    }
+
+    &-insights{
+        
+        &-container{
+            width: 100%;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            display: flex;
+            flex-flow: row wrap;
+            justify-content: space-evenly;
+            align-items: flex-start;
+            padding: 2%;
+            background-color: #F3F3F3;
+        }
+
+        &-chart{
+            &-container{
+                margin: 1rem 0;
+                background-color: white;
+                padding: 1rem;
+                border-radius: 1rem;
+            } 
+        }
+
+        &-data{
+            margin: 1rem;
+            &-header{
+                margin: 1rem 0;
+                font-weight: 600;
+            }
+
+            &-entry{
+
+                &-container{
+                    display: flex;
+                    flex-flow: row nowrap;
+                    margin: 1rem 0;
+                }
+
+                &-color{
+                    margin-right: 0.5rem;
+                    width: 1rem;
+                    height: 1rem;
+                    border-radius: 0.5rem;
+                }
+            }
+        }
+        
+    }
+
+    &-transaction{
+
+        &-container{
+            display: flex;
+            align-self: stretch;
+            flex-flow: column nowrap;
+        }
+        
+        &-header{
+            font-size: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        &-entry{
+            display: flex;
+            flex-flow: row nowrap;
+            box-shadow: 0 0 5px 2px #00000010;
+            margin: 1rem 0;
+            padding: 1rem;
+
+            &-photo{
+                background-color: #FFF3C8;
+                height: 4rem;
+                width: 4rem;
+            }
+
+            &-data{
+                display: flex;
+                flex-flow: column nowrap;
+                margin: 0 1rem;
+                justify-content: space-evenly;
+                &-cost{
+                    display: flex;
+                    flex-flow: row nowrap;
+
+                    &-icon{
+                        margin-right: 0.3rem;
+                    }
+                }
+            }
+
+            &-date{
+                margin-left: auto;
+                align-self: center;
+            }
+        }
+    }
+}

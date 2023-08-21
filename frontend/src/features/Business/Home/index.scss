@@ -1,0 +1,125 @@
+.business-home{
+    margin: 1% 20%;
+    background-color: white;
+    padding: 2%;
+    display: flex;
+    flex-flow: column nowrap;
+
+    &-token-tracker{
+        margin: 2%;
+        display: flex;
+        flex-flow: column nowrap;
+        padding: 3%;
+        box-shadow: 0 0 12px 2px #00000012;
+        border-radius: 0.5rem;
+
+        &-data{
+            display: flex;
+            flex-flow: row nowrap;
+            justify-content: space-between;
+            margin: 1rem 0;
+            font-size: 1.2rem;
+        }
+
+        &-claim-button{
+            align-self: flex-end;
+            background-color: #2874F0;
+            color: white;
+            outline: none;
+            border: none;
+            padding: 0.8rem;
+            font-weight: 600;
+            border-radius: 0.5rem;
+        }
+
+    }
+
+    &-business-offer, &-business-product {
+
+        &-container{
+            display: flex;
+            flex-flow: column nowrap;
+            align-items: flex-start;
+            &-header{
+                font-size: 1.2rem;
+                margin: 4% 2%;
+            }
+        }
+
+        &-information {
+            display: flex;
+            flex-flow: column nowrap;
+            justify-content: center;
+            align-items: flex-start;
+
+            &-announcement {
+                margin-top: auto;
+            }
+
+            &-view-all {
+                margin-top: auto;
+                background-color: #2874F0;
+                outline: none;
+                border: 0;
+                padding: 0.5rem;
+                font-weight: 600;
+                border-radius: 0.3rem;
+                color: white;
+            }
+        }
+
+        &-entity {
+            &-container {
+                display: flex;
+                flex-flow: row nowrap;
+                overflow: auto;
+
+                &::-webkit-scrollbar {
+                    display: none;
+                }
+
+                scrollbar-width: none;
+                -ms-overflow-style: none;
+            }
+
+            margin: 0 2%;
+            flex: 0 0 21%; // 25% - 2 * 2% (margin)
+
+            &-image {
+                height: 10rem;
+                position: relative;
+                background-color: #FFF3C8;
+                border-radius: 1rem;
+                margin-bottom: 10%;
+            }
+
+            &-cost {
+                &-container {
+                    position: absolute;
+                    right: 1rem;
+                    bottom: 1rem;
+                    display: flex;
+                    flex-flow: row nowrap;
+                }
+
+                &-icon {
+                    margin: 0 0.5rem;
+                }
+
+                color: #2468D8;
+            }
+        }
+
+        &-create-button {
+            margin: 2rem 0;
+            background-color:#F3F3F3;
+            padding: 2rem;
+            display: flex;
+            flex-flow: row nowrap;
+            border-radius: 1.5rem;
+            &-text{
+                margin-right: 1rem;
+            }
+        }
+    }
+}

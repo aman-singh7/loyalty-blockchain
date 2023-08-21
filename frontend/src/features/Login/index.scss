@@ -1,0 +1,17 @@
+.login-page{
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: center;
+    align-items: center;
+}
+
+.button{
+    background-color: #2874F0;
+    padding: 1rem 3rem;
+    margin: 2rem;
+    color: white;
+    border-radius: 1rem;
+    cursor: pointer;
+}
