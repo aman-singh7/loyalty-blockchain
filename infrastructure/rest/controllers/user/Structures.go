@@ -9,7 +9,7 @@ import (
 type User struct{}
 
 type DiscountRequest struct {
-	UserID          string        `json:"uid"`
+	JWT             string        `json:"jwt"`
 	ProductID       big.Int       `json:"productID"`
 	ProductCategory big.Int       `json:"productCategory"`
 	Coupon          coupon.Coupon `json:"coupon"`
@@ -17,7 +17,7 @@ type DiscountRequest struct {
 }
 
 type PurchaseProductRequest struct {
-	UserID          string         `json:"uid"`
+	JWT             string         `json:"jwt"`
 	ProductID       big.Int        `json:"productID"`
 	ProductCategory big.Int        `json:"productCategory"`
 	Coupon          *coupon.Coupon `json:"coupon"`
@@ -26,21 +26,21 @@ type PurchaseProductRequest struct {
 }
 
 type PurchaseCouponRequest struct {
-	UserID string        `json:"uid"`
+	JWT    string        `json:"jwt"`
 	Tokens big.Int       `json:"tokens"`
 	Coupon coupon.Coupon `json:"coupon"`
 }
 
 type ReferralRewardRequest struct {
-	UserID string  `json:"uid"`
+	JWT    string  `json:"jwt"`
 	Tokens big.Int `json:"tokens"`
 }
 
 type GetAllCouponsRequest struct {
-	UserID string `json:"uid"`
+	JWT string `json:"jwt"`
 }
 
 type GetBrandCouponsRequest struct {
-	UserID string `json:"uid"`
+	JWT     string `json:"jwt"`
 	BrandID string `json:"brandID"`
 }

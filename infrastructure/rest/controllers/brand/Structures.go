@@ -9,14 +9,14 @@ import (
 type Brand struct{}
 
 type CouponPriceRequest struct {
-	BrandID  string        `json:"uid"`
+	JWT      string        `json:"jwt"`
 	Coupon   coupon.Coupon `json:"coupon"`
 	Count    big.Int       `json:"count"`
 	Discount big.Int       `json:"discount"`
 }
 
 type CreateCouponRequest struct {
-	BrandID  string        `json:"uid"`
+	JWT      string        `json:"jwt"`
 	Coupon   coupon.Coupon `json:"coupon"`
 	Count    big.Int       `json:"count"`
 	Discount big.Int       `json:"discount"`
@@ -24,6 +24,6 @@ type CreateCouponRequest struct {
 }
 
 type RedeemTokensRequest struct {
-	BrandID string  `json:"uid"`
-	Tokens  big.Int `json:"tokens"`
+	JWT    string  `json:"jwt"`
+	Tokens big.Int `json:"tokens"`
 }

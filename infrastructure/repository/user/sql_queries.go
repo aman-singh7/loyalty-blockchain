@@ -23,4 +23,6 @@ const (
 
 	UPDATE_USER       = `UPDATE users SET name = $2, email = $3, account_type = $4, wallet_address = $5 WHERE uid = $1 RETURNING *`
 	CHECK_USER_EXISTS = `SELECT uid FROM users WHERE puid = $1`
+
+	GET_WALLET_ADDRESS = `SELECT wallet_address FROM users WHERE uid = $1`
 )

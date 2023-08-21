@@ -29,7 +29,7 @@ func NewService(repo *userRepo.Repository, api *api.Service) *Service {
 // TODO: make enum for errors
 
 func (s *Service) FetchBalance(address common.Address) (int, error) {
-	bal, err := s.api.FetchAccountBalance(*big.NewInt(1), address, address)
+	bal, err := s.api.FetchAccountBalance(address, address)
 	if err != nil {
 		return 0, err
 	}
@@ -50,7 +50,7 @@ func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "coupon and tokens cannot be in same transaction"})
 	}
 
-	// TODO: validate user
+	// TODO[GSM]: send request using userAddress
 	if request.Coupon != nil {
 		_, err := s.Discount(request.Coupon)
 		if err != nil {
@@ -69,27 +69,27 @@ func (s *Service) PurchaseProduct(request *user.PurchaseProductRequest) error {
 		}
 
 		if request.Coupon.CouponID.String() != "" {
-			if err := s.api.PurchaseProductWithCoupon(request.TransactionID, *request.Coupon, request.Coupon.IssuerBusiness); err != nil {
+			if err := s.api.PurchaseProductWithCoupon(*request.Coupon, request.Coupon.IssuerBusiness); err != nil {
 				return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 			}
 		}
 	}
 	if request.Tokens.Cmp(big.NewInt(0)) != 0 {
-		if err := s.api.PurchaseProductWithToken(request.TransactionID, request.Tokens); err != nil {
+		if err := s.api.PurchaseProductWithToken(request.Tokens); err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 		}
 	}
 	// TODO: decide a reward amount
 	rewardAmount := *(big.NewInt(0)).Div(&request.Price, big.NewInt(100))
-	if err := s.api.RewardToken(request.TransactionID, request.UserAddress, rewardAmount); err != nil {
+	if err := s.api.RewardToken(request.UserAddress, rewardAmount); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
 	}
 	return nil
 }
 
 func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
-	// TODO: validate user
-	if err := s.api.PurchaseCoupon(request.TransactionID, request.Coupon, request.Count, request.Coupon.IssuerBusiness); err != nil {
+	// TODO[GSM]: send request using userAddress
+	if err := s.api.PurchaseCoupon(request.Coupon, request.Count, request.Coupon.IssuerBusiness); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Transaction Failed"})
 	}
 	return nil
@@ -97,24 +97,37 @@ func (s *Service) PurchaseCoupon(request *user.PurchaseCouponRequest) error {
 
 func (s *Service) ReferralReward(request *user.ReferralRewardRequest) error {
 	// TODO: validate user1 and user2
-	if err := s.api.RewardToken(request.TransactionID, request.UserAddress, request.Tokens); err != nil {
+	// TODO[GSM]: send request using userAddress
+	if err := s.api.RewardToken(request.UserAddress, request.Tokens); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Reward Generation Failed"})
 	}
 	return nil
 }
 
-func (s* Service) GetAllCoupons(transactionId big.Int) ([]coupon.Coupon, error) {
-	coupons, err := s.api.GetAllCoupons(transactionId)
+func (s *Service) GetAllCoupons() ([]coupon.Coupon, error) {
+	coupons, err := s.api.GetAllCoupons()
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch coupons"})
 	}
 	return coupons, nil
 }
 
-func (s* Service) GetBrandCoupons(transactionId big.Int, brandAddress common.Address) ([]coupon.Coupon, error) {
-	coupons, err := s.api.GetBrandCoupons(transactionId, brandAddress)
+func (s *Service) GetBrandCoupons(brandAddress common.Address) ([]coupon.Coupon, error) {
+	coupons, err := s.api.GetBrandCoupons(brandAddress)
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch coupons"})
 	}
 	return coupons, nil
+}
+
+func (s *Service) GetAddress(token string) (string, error) {
+	uid, err := utils.GetUidFromJWT(token)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	address, err := s.repo.GetAddress(uid)
+	if err != nil {
+		return "", echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": "Failed to fetch address"})
+	}
+	return address, nil
 }

@@ -1,16 +1,12 @@
 package brand
 
 import (
-	"math/big"
 	"net/http"
 
 	brand "github.com/aman-singh7/loyalty-blockchain/application/core/brand"
 	"github.com/ethereum/go-ethereum/common"
 	"github.com/labstack/echo/v4"
 )
-
-// TODO: remove this
-var bAddress string = ""
 
 type Controller struct {
 	BrandService *brand.Service
@@ -28,11 +24,12 @@ func (c *Controller) CouponPrice(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
+	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
 	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainCouponPriceRequest(&request, transactionId, brandAddress)
+	serviceRequest := toDomainCouponPriceRequest(&request, brandAddress)
 	price, err := c.BrandService.CouponPrice(serviceRequest)
 	if err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
@@ -48,13 +45,13 @@ func (c *Controller) CreateCoupon(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
-	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainCreateCouponRequest(&request, transactionId, brandAddress)
-	err := c.BrandService.CreateCoupon(serviceRequest)
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
 	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	brandAddress := common.HexToAddress(bAddress)
+	serviceRequest := toDomainCreateCouponRequest(&request, brandAddress)
+	if err := c.BrandService.CreateCoupon(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})
@@ -68,13 +65,13 @@ func (c *Controller) RedeemTokens(ctx echo.Context) error {
 	if err := ctx.Validate(request); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: user address from jwt
-	brandAddress := common.HexToAddress(bAddress)
-	// TODO: generate transaction id
-	transactionId := *big.NewInt(2)
-	serviceRequest := toDomainRedeemTokensRequest(&request, transactionId, brandAddress)
-	err := c.BrandService.RedeemTokens(serviceRequest)
+	bAddress, err := c.BrandService.GetAddress(request.JWT)
 	if err != nil {
+		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
+	}
+	brandAddress := common.HexToAddress(bAddress)
+	serviceRequest := toDomainRedeemTokensRequest(&request, brandAddress)
+	if err := c.BrandService.RedeemTokens(serviceRequest); err != nil {
 		return ctx.JSON(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
 	return ctx.JSON(http.StatusOK, echo.Map{"message": "success"})

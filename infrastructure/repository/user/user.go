@@ -103,3 +103,10 @@ func (r *Repository) UserExists(puid string) (string, error) {
 
 	return userId, err
 }
+
+func (r *Repository) GetAddress(uid string) (string, error) {
+	address := ""
+	err := r.db.QueryRow(GET_WALLET_ADDRESS, uid).Scan(&address)
+
+	return address, err
+}

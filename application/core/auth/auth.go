@@ -94,7 +94,6 @@ func (s *Service) GenerateAccessTokenFromRefreshToken(request *domain.GenerateTo
 	if err != nil {
 		return nil, echo.NewHTTPError(http.StatusBadRequest, echo.Map{"message": err.Error()})
 	}
-	// TODO: check if user exists
 	userId := claims["uid"].(string)
 	_, err = s.repo.UserExists(userId)
 	if err != nil {
